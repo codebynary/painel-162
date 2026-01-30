@@ -1,3 +1,3 @@
-# Painel 162
+# Painel Perfect World - Version Inicial 162
 
-Project initialized. Waiting for stack definition.
+Este é um painel administrativo moderno e responsivo para servidores Perfect World na versão 1.6.2 (e compatíveis).
