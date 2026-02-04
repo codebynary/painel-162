@@ -13,6 +13,14 @@
 
 ---
 
+![Standard](https://img.shields.io/badge/standard-pending_compliance-yellow?style=for-the-badge)
+
+> [!WARNING]
+> **Aguardando Padronização Antigravity**: Este projeto deve ser migrado para arquitetura "Docker Dev / Native Prod".
+> Consulte: `.agent/PROJECT_STATUS.md` e a tarefa associada.
+
+---
+
 **Painel PW 162** é uma solução completa de ecossistema para servidores de Perfect World, focada em segurança, performance e experiência do usuário (UX). Desenvolvido com as tecnologias mais modernas do mercado, o painel oferece uma interface intuitiva tanto para jogadores quanto para administradores, sem comprometer a integridade dos dados originais do jogo.
 
 [Explorar Features](#-principais-recursos) • [Arquitetura](#-arquitetura-do-projeto) • [Guia de Instalação](#-guia-de-instalação-quickstart) • [Stack](#-stack-tecnológica)
