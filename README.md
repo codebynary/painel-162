@@ -63,36 +63,44 @@ graph TD
 
 ## ✨ Principais Recursos
 
-### 👤 Área do Jogador
-- **Dashboard Dinâmico**: Visão geral da conta, quantidade de personagens e saldo de Gold/Cash.
-- **Gestão de Personagens**: Lista detalhada com level, classe, status e visualização de inventário (read-only).
-- **Sistema de Doações**: Histórico de compras, gestão de pacotes e entrega automática.
-- **Segurança da Conta**: Alteração de senha e logs de atividade.
+### 👤 Área do Jogador (Premium UI)
+- **Dashboard Glassmorphism**: Visão geral com estilo futurista e red-glass effects.
+- **Gestão de Personagens**: Cards interativos com ícones de classe e função de **Teleporte de Emergência**.
+- **Loja de Gold & Histórico**: Interface de compra de pacotes com bônus e aba dedicada ao histórico de transações.
+- **Segurança**: Fluxo de autenticação JWT e registro integrado.
 
-### 🛡️ Portal Administrativo (ADM)
-- **Gestão de Contas**: Banimento, desbanimento, reset de senhas e monitoramento de IPs.
-- **Gestão de Personagens**: Ferramentas de suporte (Kick, Rename, Transferência).
-- **Controle do Servidor**: Status em tempo real (Auth, GS, Delivery) e Broadcast global.
-- **Logs Completos**: Auditoria de cada ação realizada no painel.
+### 🛡️ Portal Administrativo (Central de Controle)
+- **Monitor de Processos**: Status em tempo real dos serviços core (`gamedbd`, `gdeliveryd`, etc) com indicadores visuais.
+- **Gestão de Energia**: Botões para inicializar (`Start`) ou desligar (`Shutdown`) o servidor com segurança.
+- **Player Manager Avançado**: Busca global, visualização de personagens e controle de punições/suporte.
+- **Controle de Mapas**: Interface para visualizar e gerenciar IDs de instâncias ativas.
 
 ---
 
-## 🧰 Stack Tecnológica
+## 🏗️ Arquitetura de Software
+
+O projeto utiliza padrões de design de nível enterprise para garantir robustez:
+
+- **Repository Pattern**: Camada isolada para todas as interações com o banco de dados.
+- **Service Pattern**: Lógica de negócios desacoplada dos controllers, facilitando manutenção.
+- **Modular Design**: Divisão clara entre Auth, Character, Server e Donate.
+
+---
+
+## 🧰 Stack Tecnológica Padronizada
 
 ### 🔹 Backend (API Engine)
 - **Runtime**: Node.js 20 LTS
-- **Framework**: Express.js com TypeScript
-- **Auth**: JWT (Access + Refresh Tokens) & bcrypt para hashing
-- **Segurança**: Helmet.js, Rate Limiting e Zod para validação
-- **Log**: Winston Logging System
-- **Database**: Driver `mysql2` robusto
+- **Language**: TypeScript (Strict)
+- **Patterns**: Repository & Service
+- **Auth**: JWT (Stateless)
+- **Logging**: Winston Professional
 
-### 🔹 Frontend (User Interface)
-- **Core**: React 18/19 & Vite
-- **Estilização**: Tailwind CSS (Modern Dark UI)
-- **Animações**: Framer Motion (Transições fluidas)
-- **Ícones**: Lucide React & HeroIcons
-- **Gerenciamento de Estado**: React Hooks nativos
+### 🔹 Frontend (High-End UI)
+- **Core**: React 19 & Vite
+- **Styling**: Tailwind CSS (Custom Red Brand)
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
 
 ### 🔹 Infraestrutura
 - **Deployment**: Execução nativa (Node.js 20+)

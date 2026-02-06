@@ -63,27 +63,25 @@ npm run dev
 
 ## Production / Real Infrastructure Integration
 
-To switch from **Mock Data** to **Real Perfect World Server**:
+Para converter o ambiente **Mock** para um servidor **Perfect World Real**:
 
 ### 1. Database Connection
-Modify `backend/.env` to point to your real PW database (SQL Server or Linux MySQL).
-*   **Important**: PW usually uses MSSQL or strict MySQL versions. Ensure the `mysql2` driver is compatible, or switch to `mssql` (tedious) if using MSSQL.
-*   **Current Mock**: We use MySQL 5.7.
+O painel utiliza o **Repository Pattern**. Você só precisa atualizar o arquivo `backend/.env` com as credenciais reais.
+- O `CharacterRepository.ts` está preparado para ler as tabelas PW nativas ou ser adaptado na camada de Repository.
 
-### 2. Character Data (`characters` table)
-The current `Get Characters` endpoint queries a local `characters` table.
-*   **Real Integration**: You must query the `pointbucket` or the Game DB (`gamedbd`) which is complex.
-*   **Alternative**: Sync `p_roles` to a MySQL table periodically if you cannot query the game DB directly from Node.
+### 2. Integração com RPC (GProvider/GDelivery)
+As ações em jogo (como teleporte ou entrega de Gold) devem utilizar a pasta `backend/src/rpc`.
+- **Teleporte**: Já configurado para chamar o `CharacterService`, pronto para o sender RPC.
+- **Broadcast**: O `AdminController` possui a estrutura para enviar sinais ao `GProvider`.
 
-### 3. Donations (`donate_controller.ts`)
-The current payment flow is a **MOCK**.
-*   **To go Live**:
-    1.  Integrate a real gateway (MercadoPago, Stripe, PayPal).
-    2.  Update `createPayment` to call the gateway API.
-    3.  Update `webhook` to verify the real signature.
-    4.  **Delivery**: Instead of just updating the status, you must trigger the **Gold Delivery**.
-        *   *Option A*: Insert into `usecashnow` table (if supported).
-        *   *Option B*: Use `gdeliveryd` console commands via a socket connection (requires a C++ bridge or specific Node packet sender).
+### 3. Sistema de Gold (`DonateService.ts`)
+A lógica de entrega foi centralizada no `DonateService`.
+- Para **Entrega Automática**: No método `confirmPayment`, ative a chamada SQL para a tabela `cash` ou o sinal RPC.
+- **Gateway**: Basta injetar o SDK do MercadoPago ou Stripe no `DonateService`.
+
+### 4. Gestão de Processos (`ServerService.ts`)
+O serviço de controle de servidor é extensível para Linux ou Windows.
+- **Comandos Local/SSH**: Edite o `ServerService` para executar comandos de sistema via `child_process.exec`.
 
 ## Troubleshooting
 - **Docker**: If ports 3306 are occupied, change `docker-compose.yml`.
