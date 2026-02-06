@@ -1,6 +1,5 @@
-import React from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Shield, ArrowLeft } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Shield, ArrowLeft, ShoppingBag, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AdminLayout = () => {
@@ -48,6 +47,24 @@ const AdminLayout = () => {
                         >
                             <Users className="w-5 h-5" />
                             <span className="text-xs font-black tracking-widest uppercase">Jogadores</span>
+                        </motion.div>
+                    </Link>
+                    <Link to="/admin/store">
+                        <motion.div
+                            whileHover={{ x: 5 }}
+                            className={`flex items-center space-x-3 px-6 py-4 rounded-2xl transition-all ${isActive('/admin/store') ? 'bg-brand-red text-white shadow-[0_0_20px_rgba(204,0,0,0.2)]' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}`}
+                        >
+                            <ShoppingBag className="w-5 h-5" />
+                            <span className="text-xs font-black tracking-widest uppercase">Loja</span>
+                        </motion.div>
+                    </Link>
+                    <Link to="/admin/mail">
+                        <motion.div
+                            whileHover={{ x: 5 }}
+                            className={`flex items-center space-x-3 px-6 py-4 rounded-2xl transition-all ${isActive('/admin/mail') ? 'bg-brand-red text-white shadow-[0_0_20px_rgba(204,0,0,0.2)]' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}`}
+                        >
+                            <Mail className="w-5 h-5" />
+                            <span className="text-xs font-black tracking-widest uppercase">Correio</span>
                         </motion.div>
                     </Link>
                 </nav>

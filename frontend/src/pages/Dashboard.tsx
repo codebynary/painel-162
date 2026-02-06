@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import CharacterCard from '../components/CharacterCard';
+import logo from '../assets/logo-velorian.png';
 import axios from 'axios';
-import { LogOut, RefreshCcw } from 'lucide-react';
+import { LogOut, RefreshCcw, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Character {
@@ -18,7 +19,32 @@ interface Character {
 const Dashboard = () => {
     const [characters, setCharacters] = useState<Character[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isServerOnline, setIsServerOnline] = useState(false);
+    const [balance, setBalance] = useState(0);
     const navigate = useNavigate();
+
+    const fetchBalance = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:3000/api/donate/balance', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setBalance(response.data.balance);
+        } catch (error) {
+            console.error('Error fetching balance', error);
+        }
+    };
+
+    const fetchServerStatus = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/api/server/status');
+            const online = response.data.some((proc: any) => proc.running);
+            setIsServerOnline(online);
+        } catch (error) {
+            console.error('Error fetching server status', error);
+            setIsServerOnline(false);
+        }
+    };
 
     const fetchCharacters = async () => {
         setIsLoading(true);
@@ -37,6 +63,14 @@ const Dashboard = () => {
 
     useEffect(() => {
         fetchCharacters();
+        fetchServerStatus();
+        fetchBalance();
+        // Polling status
+        const interval = setInterval(() => {
+            fetchServerStatus();
+            fetchBalance();
+        }, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     const handleLogout = () => {
@@ -45,28 +79,49 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white relative overflow-hidden font-inter">
+        <div className="min-h-screen bg-[#050505] text-white relative overflow-hidden font-inter selection:bg-brand-red/30">
+            {/* Grainy Overlay */}
+            <div className="absolute inset-0 grainy-bg z-50"></div>
+
             {/* Background Decor */}
             <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,#200000_0%,#000000_100%)] opacity-40"></div>
             <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand-red/5 blur-[120px] rounded-full"></div>
 
+
             <div className="relative z-10 max-w-7xl mx-auto p-6 lg:p-12">
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
-                    <div>
-                        <h1 className="text-4xl font-black text-white tracking-tighter text-glow-red">
-                            MINHA <span className="text-brand-red">JORNADA</span>
-                        </h1>
-                        <p className="text-white/30 font-medium tracking-wide mt-1">Gerencie seus personagens e recursos com perfeição.</p>
+                    <div className="flex items-center gap-6">
+                        <img
+                            src={logo}
+                            alt="Velorian Logo"
+                            className="w-16 h-16 drop-shadow-[0_0_15px_rgba(204,0,0,0.4)] mix-blend-screen"
+                        />
+                        <div>
+                            <h1 className="text-4xl font-black text-white tracking-tighter text-glow-red uppercase leading-none">
+                                VELORIAN <span className="text-brand-red font-outline">PW</span>
+                            </h1>
+                            <p className="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase mt-2">Plataforma de Gestão de Heróis</p>
+                        </div>
+
                     </div>
                     <div className="flex items-center space-x-4">
                         <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            onClick={handleLogout}
+                            onClick={() => navigate('/admin')}
                             className="bg-brand-red/10 border border-brand-red/30 px-6 py-3 rounded-xl text-xs font-bold text-brand-red hover:bg-brand-red hover:text-white transition-all flex items-center shadow-[0_0_15px_rgba(204,0,0,0.1)]"
                         >
+                            <ShieldCheck className="w-4 h-4 mr-2" />
+                            PAINEL ADMIN
+                        </motion.button>
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={handleLogout}
+                            className="bg-white/5 border border-white/10 px-6 py-3 rounded-xl text-xs font-bold text-white/40 hover:bg-white/10 hover:text-white transition-all flex items-center"
+                        >
                             <LogOut className="w-4 h-4 mr-2" />
-                            ENCERRAR SESSÃO
+                            ENCERRAR
                         </motion.button>
                     </div>
                 </header>
@@ -127,10 +182,11 @@ const Dashboard = () => {
                                 <div className="flex items-center justify-between border-t border-white/5 pt-6">
                                     <span className="text-white/40 text-sm font-medium">Créditos Gold</span>
                                     <div className="text-right">
-                                        <span className="text-2xl font-black text-white block leading-none">0</span>
-                                        <span className="text-[10px] text-brand-red font-bold uppercase tracking-widest">CASH</span>
+                                        <span className="text-3xl font-black text-white block leading-none tracking-tighter text-glow-white">{balance.toLocaleString()}</span>
+                                        <span className="text-[10px] text-brand-red font-bold uppercase tracking-[0.2em] mt-1 block">CASH</span>
                                     </div>
                                 </div>
+
                             </div>
 
                             <motion.button
@@ -143,13 +199,15 @@ const Dashboard = () => {
                             </motion.button>
                         </div>
 
-                        {/* Server Status Mock */}
+                        {/* Server Status Dynamic */}
                         <div className="glass-card rounded-2xl p-6 border-white/5 flex items-center justify-between">
                             <div className="flex items-center space-x-4">
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]"></div>
+                                <div className={`w-2 h-2 ${isServerOnline ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'} rounded-full ${isServerOnline ? 'animate-pulse' : ''}`}></div>
                                 <span className="text-xs font-bold text-white/60 uppercase tracking-wider">Status do Servidor</span>
                             </div>
-                            <span className="text-[10px] font-black text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">ONLINE</span>
+                            <span className={`text-[10px] font-black ${isServerOnline ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-red-500 bg-red-500/10 border-red-500/20'} px-2 py-1 rounded border uppercase`}>
+                                {isServerOnline ? 'ONLINE' : 'OFFLINE'}
+                            </span>
                         </div>
                     </div>
                 </main>

@@ -179,11 +179,29 @@ const Donate = () => {
                                             <td className="px-8 py-6 font-bold text-white">R$ {Number(item.amount).toFixed(2)}</td>
                                             <td className="px-8 py-6 font-black text-brand-red">{item.gold_amount.toLocaleString()}</td>
                                             <td className="px-8 py-6">
-                                                <div className="flex items-center space-x-2">
-                                                    {getStatusIcon(item.status)}
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${item.status === 'completed' ? 'text-emerald-500' : 'text-white/20'}`}>
-                                                        {item.status}
-                                                    </span>
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="flex items-center space-x-2">
+                                                        {getStatusIcon(item.status)}
+                                                        <span className={`text-[10px] font-black uppercase tracking-widest ${item.status === 'completed' ? 'text-emerald-500' : 'text-white/20'}`}>
+                                                            {item.status}
+                                                        </span>
+                                                    </div>
+                                                    {item.status === 'pending' && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                const token = localStorage.getItem('token');
+                                                                await axios.post('http://localhost:3000/api/donate/webhook', {
+                                                                    donationId: item.id,
+                                                                    externalId: 'MOCK_TEST_' + Date.now()
+                                                                });
+                                                                alert('Pagamento aprovado com sucesso! (Simulação)');
+                                                                fetchPackages();
+                                                            }}
+                                                            className="text-[10px] bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-500 font-black px-3 py-1 rounded border border-emerald-500/20 transition-all uppercase"
+                                                        >
+                                                            Aprovar (TESTE)
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-xs text-white/30">{new Date(item.created_at).toLocaleDateString()}</td>

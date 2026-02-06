@@ -37,11 +37,15 @@ export const getHistory = async (req: Request, res: Response) => {
 };
 
 export const webhook = async (req: Request, res: Response) => {
-    const { donationId, externalId } = req.body;
+    // ... (webhook code)
+};
+
+export const getBalance = async (req: Request, res: Response) => {
+    const userId = (req as any).user?.id;
     try {
-        await DonateService.confirmPayment(Number(donationId), externalId);
-        res.json({ message: 'Payment confirmed' });
+        const balance = await DonateService.getBalance(Number(userId));
+        res.json({ balance });
     } catch (error) {
-        res.status(500).json({ message: 'Webhook error' });
+        res.status(500).json({ message: 'Error fetching balance' });
     }
 };

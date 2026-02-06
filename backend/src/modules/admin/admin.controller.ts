@@ -191,6 +191,54 @@ export const listMaps = async (req: Request, res: Response) => {
     }
 };
 
+// --- Store Management ---
+
+export const listPackages = async (req: Request, res: Response) => {
+    try {
+        const [rows] = await pool.execute<RowDataPacket[]>('SELECT * FROM donate_packages ORDER BY price ASC');
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: 'Error listing packages' });
+    }
+};
+
+export const createPackage = async (req: Request, res: Response) => {
+    try {
+        const { name, price, gold, bonus, image_url } = req.body;
+        const [result] = await pool.execute<ResultSetHeader>(
+            'INSERT INTO donate_packages (name, price, gold, bonus, image_url) VALUES (?, ?, ?, ?, ?)',
+            [name, price, gold, bonus || 0, image_url || null]
+        );
+        res.json({ id: result.insertId, message: 'Package created successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error creating package' });
+    }
+};
+
+export const updatePackage = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const { name, price, gold, bonus, image_url } = req.body;
+        await pool.execute(
+            'UPDATE donate_packages SET name=?, price=?, gold=?, bonus=?, image_url=? WHERE id=?',
+            [name, price, gold, bonus || 0, image_url || null, id]
+        );
+        res.json({ message: 'Package updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating package' });
+    }
+};
+
+export const deletePackage = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        await pool.execute('DELETE FROM donate_packages WHERE id = ?', [id]);
+        res.json({ message: 'Package deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error deleting package' });
+    }
+};
+
 export const toggleMap = async (req: Request, res: Response) => {
     const { mapId } = req.params;
     const { active } = req.body;

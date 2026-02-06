@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Lock, User } from 'lucide-react';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
+import { Lock, User, Youtube, Facebook, MessageSquare } from 'lucide-react';
+import logo from '../assets/logo-velorian.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +34,10 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-[#050505] relative overflow-hidden">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[#050505] relative overflow-hidden selection:bg-brand-red/30">
+            {/* Grainy Overlay */}
+            <div className="absolute inset-0 grainy-bg z-50"></div>
+
             {/* Background Decor */}
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#300000_0%,#000000_100%)] opacity-50"></div>
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-red/10 blur-[120px] rounded-full"></div>
@@ -52,14 +54,19 @@ const Login = () => {
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ delay: 0.2 }}
-                        className="inline-block p-4 rounded-2xl bg-brand-red/10 border border-brand-red/20 mb-4 shadow-[0_0_20px_rgba(204,0,0,0.2)]"
+                        className="mb-8"
                     >
-                        <Lock className="w-10 h-10 text-brand-red" />
+                        <img
+                            src={logo}
+                            alt="Velorian Logo"
+                            className="w-32 h-32 mx-auto drop-shadow-[0_0_20px_rgba(204,0,0,0.5)] mix-blend-screen brightness-110 contrast-125"
+                        />
                     </motion.div>
-                    <h2 className="text-4xl font-extrabold text-white tracking-tight mb-2 text-glow-red">
-                        PAINEL <span className="text-brand-red">162</span>
+                    <h2 className="text-4xl font-black text-white tracking-tighter mb-2 text-glow-red uppercase">
+                        VELORIAN <span className="text-brand-red font-outline">PW</span>
                     </h2>
-                    <p className="text-white/40 font-medium">Bem-vindo de volta, Guerreiro.</p>
+                    <p className="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase">SISTEMA DE GESTÃO INTEGRADA</p>
+
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -104,14 +111,14 @@ const Login = () => {
                     )}
 
                     <motion.button
-                        whileHover={{ scale: 1.02 }}
+                        whileHover={{ scale: 1.02, backgroundColor: '#e60000' }}
                         whileTap={{ scale: 0.98 }}
                         disabled={isLoading}
                         type="submit"
-                        className="w-full bg-brand-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-[0_0_15px_rgba(204,0,0,0.4)] transition-all flex items-center justify-center disabled:opacity-50"
+                        className="w-full bg-brand-red text-white font-black py-5 rounded-2xl shadow-[0_0_30px_rgba(204,0,0,0.2)] hover:shadow-[0_0_40px_rgba(204,0,0,0.3)] transition-all flex items-center justify-center disabled:opacity-50 text-xs tracking-[0.2em] uppercase"
                     >
                         {isLoading ? (
-                            <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                         ) : (
                             'ENTRAR NO PAINEL'
                         )}
@@ -127,9 +134,36 @@ const Login = () => {
                     </div>
                 </form>
 
+                <div className="mt-8 flex justify-center space-x-6">
+                    <motion.a
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        href="#"
+                        className="p-3 bg-blue-600/10 border border-blue-600/20 rounded-xl text-blue-500 hover:bg-blue-600 hover:text-white transition-all shadow-[0_0_15px_rgba(37,99,235,0.1)]"
+                        title="Facebook"
+                    >
+                        <Facebook className="w-5 h-5" />
+                    </motion.a>
+                    <motion.a
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        href="#"
+                        className="p-3 bg-indigo-600/10 border border-indigo-600/20 rounded-xl text-indigo-500 hover:bg-indigo-600 hover:text-white transition-all shadow-[0_0_15px_rgba(79,70,229,0.1)]"
+                        title="Discord"
+                    >
+                        <MessageSquare className="w-5 h-5" />
+                    </motion.a>
+                    <motion.a
+                        whileHover={{ scale: 1.1, y: -2 }}
+                        href="#"
+                        className="p-3 bg-red-600/10 border border-red-600/20 rounded-xl text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-[0_0_15px_rgba(220,38,38,0.1)]"
+                        title="YouTube"
+                    >
+                        <Youtube className="w-5 h-5" />
+                    </motion.a>
+                </div>
+
                 <div className="mt-10 pt-6 border-t border-white/5 text-center">
                     <p className="text-[10px] text-white/20 font-bold tracking-widest uppercase">
-                        NEXT-GEN PW MANAGEMENT SYSTEM
+                        VELORIAN NEXT-GEN SYSTEM
                     </p>
                 </div>
             </motion.div>

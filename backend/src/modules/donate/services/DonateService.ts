@@ -1,4 +1,5 @@
 import { DonateRepository, DonatePackage, Donation } from '../repositories/DonateRepository';
+import pool from '../../../config/database';
 import { GDeliveryClient } from '../../rpc/GDeliveryClient';
 
 export class DonateService {
@@ -28,16 +29,28 @@ export class DonateService {
      * Webhook/Callback to confirm payment and deliver Gold.
      */
     static async confirmPayment(donationId: number, externalId: string): Promise<void> {
-        // In real life, verify externalId with gateway
+        // 1. Update donation status in history
         await DonateRepository.updateStatus(donationId, 'completed', externalId);
 
-        // Deliver Gold logic
-        // We would need the userId from the donation record (should be fetched first)
-        // For now, this is where we would call RPC to deliver Gold.
-        console.log(`[DONATE SERVICE] Gold delivered for donation ${donationId}`);
+        // 2. Fetch the donation to get userId and goldAmount
+        const [rows]: any = await pool.execute(
+            'SELECT userid, gold_amount FROM donations WHERE id = ?',
+            [donationId]
+        );
+
+        if (rows.length > 0) {
+            const { userid, gold_amount } = rows[0];
+            // 3. Update the real balance in units_cash
+            await DonateRepository.addBalance(userid, gold_amount);
+            console.log(`[DONATE SERVICE] Delivered ${gold_amount} cash to user ${userid}`);
+        }
     }
 
     static async getUserHistory(userId: number): Promise<Donation[]> {
         return await DonateRepository.findByUserId(userId);
+    }
+
+    static async getBalance(userId: number): Promise<number> {
+        return await DonateRepository.getBalance(userId);
     }
 }

@@ -42,14 +42,15 @@ export class ServerService {
      * Start the server using a base script.
      */
     static async startServer(): Promise<string> {
-        // In a real scenario, this would execute a .sh or .bat script
-        // Path should be configurable via env
-        const scriptPath = process.env.SERVER_START_SCRIPT || './scripts/start_server.sh';
+        const isWindows = process.platform === 'win32';
+        const scriptPath = process.env.SERVER_START_SCRIPT ||
+            (isWindows ? '.\\scripts\\start_server.bat' : './scripts/start_server.sh');
 
         try {
             const { stdout } = await execPromise(scriptPath);
             return stdout || 'Comando de inicialização enviado.';
         } catch (error: any) {
+            console.error('Start error:', error);
             throw new Error(`Erro ao iniciar servidor: ${error.message}`);
         }
     }
@@ -58,12 +59,15 @@ export class ServerService {
      * Stop the server using a base script.
      */
     static async stopServer(): Promise<string> {
-        const scriptPath = process.env.SERVER_STOP_SCRIPT || './scripts/stop_server.sh';
+        const isWindows = process.platform === 'win32';
+        const scriptPath = process.env.SERVER_STOP_SCRIPT ||
+            (isWindows ? '.\\scripts\\stop_server.bat' : './scripts/stop_server.sh');
 
         try {
             const { stdout } = await execPromise(scriptPath);
             return stdout || 'Comando de encerramento enviado.';
         } catch (error: any) {
+            console.error('Stop error:', error);
             throw new Error(`Erro ao parar servidor: ${error.message}`);
         }
     }

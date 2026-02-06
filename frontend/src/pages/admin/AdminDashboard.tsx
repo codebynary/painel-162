@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Users, Trophy, Box, Activity, Power, RefreshCcw, Loader2, Map } from 'lucide-react';
+import { Shield, Users, Trophy, Box, Activity, Power, RefreshCcw, Loader2, Map, ArrowLeft } from 'lucide-react';
+import logo from '../../assets/logo-velorian.png';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface ProcessStatus {
     name: string;
@@ -13,6 +15,7 @@ const AdminDashboard = () => {
     const [isLoadingStatus, setIsLoadingStatus] = useState(true);
     const [isActionInProgress, setIsActionInProgress] = useState(false);
     const [activeMaps, setActiveMaps] = useState<number[]>([]);
+    const navigate = useNavigate();
 
     const fetchStatus = async () => {
         setIsLoadingStatus(true);
@@ -64,11 +67,31 @@ const AdminDashboard = () => {
     ];
 
     return (
-        <div className="space-y-10 font-inter">
+        <div className="space-y-10 font-inter selection:bg-brand-red/30 relative">
+            {/* Grainy Overlay */}
+            <div className="absolute inset-0 grainy-bg z-50"></div>
+
             <header className="flex justify-between items-end border-b border-white/5 pb-8">
-                <div>
-                    <h1 className="text-3xl font-black text-white tracking-tighter">ADMIN <span className="text-brand-red">DASHBOARD</span></h1>
-                    <p className="text-white/30 text-sm font-medium mt-1">Gerenciamento de infraestrutura e usuários.</p>
+                <div className="flex items-center gap-8">
+                    <div className="flex items-center gap-4">
+                        <img
+                            src={logo}
+                            alt="Velorian Logo"
+                            className="w-12 h-12 drop-shadow-[0_0_10px_rgba(204,0,0,0.4)] mix-blend-screen"
+                        />
+                        <div>
+                            <h1 className="text-3xl font-black text-white tracking-tighter uppercase leading-none">VELORIAN <span className="text-brand-red font-outline">ADMIN</span></h1>
+                            <p className="text-[10px] text-white/30 font-bold tracking-[0.2em] uppercase mt-2">Painel de Controle de Infraestrutura</p>
+                        </div>
+
+                    </div>
+                    <button
+                        onClick={() => navigate('/dashboard')}
+                        className="flex items-center gap-2 text-[10px] font-black text-white/20 hover:text-brand-red transition-all uppercase tracking-widest bg-white/5 px-4 py-2 rounded-lg border border-white/5"
+                    >
+                        <ArrowLeft className="w-3 h-3" />
+                        Voltar ao Painel
+                    </button>
                 </div>
                 <button
                     onClick={fetchStatus}
@@ -139,13 +162,14 @@ const AdminDashboard = () => {
                                 <div key={i} className="h-28 bg-white/5 animate-pulse rounded-2xl"></div>
                             ))
                         ) : processStatus.map((proc, i) => (
-                            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all">
-                                <div className={`w-3 h-3 rounded-full mb-4 shadow-[0_0_10px_currentColor] ${proc.running ? 'text-emerald-500 bg-emerald-500' : 'text-red-500 bg-red-500'}`}></div>
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-1">{proc.name}</span>
-                                <span className={`text-xs font-bold ${proc.running ? 'text-white' : 'text-white/40'}`}>
+                            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all relative overflow-hidden">
+                                <div className={`w-3 h-3 rounded-full mb-4 shadow-[0_0_15px_currentColor] ${proc.running ? 'text-emerald-500 bg-emerald-500' : 'text-red-500 bg-red-500'}`}></div>
+                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-2">{proc.name}</span>
+                                <span className={`text-xs font-black tracking-tighter ${proc.running ? 'text-white' : 'text-white/20'}`}>
                                     {proc.running ? 'ONLINE' : 'OFFLINE'}
                                 </span>
                             </div>
+
                         ))}
                     </div>
                 </div>

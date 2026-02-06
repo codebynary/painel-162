@@ -15,7 +15,11 @@ import {
     startServer,
     stopServer,
     listMaps,
-    toggleMap
+    toggleMap,
+    listPackages,
+    createPackage,
+    updatePackage,
+    deletePackage
 } from './admin.controller';
 
 const router = Router();
@@ -42,5 +46,11 @@ router.post('/server/start', startServer);
 router.post('/server/stop', stopServer);
 router.get('/server/maps', listMaps);
 router.post('/server/maps/:mapId/toggle', toggleMap);
+
+// Store Management
+router.get('/store/packages', listPackages);
+router.post('/store/packages', createPackage);
+router.put('/store/packages/:id', updatePackage);
+router.delete('/store/packages/:id', deletePackage);
 
 export default router;

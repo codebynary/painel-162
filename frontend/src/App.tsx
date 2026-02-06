@@ -5,6 +5,8 @@ import Donate from './pages/Donate';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import PlayerManager from './pages/admin/PlayerManager';
+import StoreManager from './pages/admin/StoreManager';
+import MailManager from './pages/admin/MailManager';
 
 // Simple auth check for now
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +44,8 @@ function App() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="players" element={<PlayerManager />} />
+          <Route path="store" element={<StoreManager />} />
+          <Route path="mail" element={<MailManager />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

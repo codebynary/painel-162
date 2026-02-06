@@ -18,7 +18,7 @@ export class CharacterRepository {
     static async findByUserId(userId: number): Promise<Character[]> {
         const [rows] = await pool.execute<RowDataPacket[]>(
             `SELECT id, roleid, name, cls, level, gender, reputation 
-       FROM characters 
+       FROM pw_users.characters 
        WHERE userid = ? AND status = 1`,
             [userId]
         );
@@ -32,7 +32,7 @@ export class CharacterRepository {
     static async findByRoleId(roleId: number): Promise<Character | null> {
         const [rows] = await pool.execute<RowDataPacket[]>(
             `SELECT id, roleid, name, cls, level, gender, reputation 
-       FROM characters 
+       FROM pw_users.characters 
        WHERE roleid = ?`,
             [roleId]
         );
