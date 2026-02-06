@@ -1,3 +1,35 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+:root {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --primary: 0 72.2% 50.6%;
+  --primary-foreground: 0 85.7% 97.3%;
+}
+
+@theme {
+  --color-brand-red: #cc0000;
+  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(15, 15, 15, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  }
+
+  .text-glow-red {
+    text-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
+  }
+}
+
+body {
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+}
