@@ -3,6 +3,7 @@ import pool from '../../config/database';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import { GProviderClient } from '../rpc/GProviderClient';
 import { GDeliveryClient } from '../rpc/GDeliveryClient';
+import { ServerService } from './services/ServerService';
 
 // --- Player Management ---
 
@@ -149,5 +150,54 @@ export const sendSystemMail = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Mail Error:', error);
         res.status(500).json({ message: 'Failed to send mail' });
+    }
+};
+
+// --- Server Management ---
+
+export const getServerStatus = async (req: Request, res: Response) => {
+    try {
+        const statuses = await ServerService.getStatus();
+        res.json(statuses);
+    } catch (error) {
+        res.status(500).json({ message: 'Error checking server status' });
+    }
+};
+
+export const startServer = async (req: Request, res: Response) => {
+    try {
+        const output = await ServerService.startServer();
+        res.json({ message: 'Server start initiated', output });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const stopServer = async (req: Request, res: Response) => {
+    try {
+        const output = await ServerService.stopServer();
+        res.json({ message: 'Server stop initiated', output });
+    } catch (error: any) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+export const listMaps = async (req: Request, res: Response) => {
+    try {
+        const maps = await ServerService.getActiveMaps();
+        res.json(maps);
+    } catch (error) {
+        res.status(500).json({ message: 'Error listing maps' });
+    }
+};
+
+export const toggleMap = async (req: Request, res: Response) => {
+    const { mapId } = req.params;
+    const { active } = req.body;
+    try {
+        await ServerService.toggleMap(Number(mapId), active);
+        res.json({ message: `Map ${mapId} toggled successfully` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error toggling map' });
     }
 };

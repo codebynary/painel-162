@@ -10,7 +10,12 @@ import {
     viewInventory,
     getCharactersByUser,
     broadcastMessage,
-    sendSystemMail
+    sendSystemMail,
+    getServerStatus,
+    startServer,
+    stopServer,
+    listMaps,
+    toggleMap
 } from './admin.controller';
 
 const router = Router();
@@ -30,5 +35,12 @@ router.get('/characters/:charId/inventory', viewInventory);
 
 router.post('/broadcast', broadcastMessage);
 router.post('/mail', sendSystemMail);
+
+// Server Control
+router.get('/server/status', getServerStatus);
+router.post('/server/start', startServer);
+router.post('/server/stop', stopServer);
+router.get('/server/maps', listMaps);
+router.post('/server/maps/:mapId/toggle', toggleMap);
 
 export default router;
