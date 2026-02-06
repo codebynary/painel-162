@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Ban, Search, Eye, MapPin, Package, Mail, Shield, User, Loader2, X } from 'lucide-react';
+import { Ban, Search, Eye, Shield, User, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import InventoryBankViewer from '../../components/InventoryBankViewer';
 
 // Types
 interface UserData {
@@ -28,6 +29,10 @@ const PlayerManager = () => {
     const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
     const [userCharacters, setUserCharacters] = useState<Character[]>([]);
     const [isCharModalLoading, setIsCharModalLoading] = useState(false);
+
+    // Inventory Viewer States
+    const [showInventory, setShowInventory] = useState(false);
+    const [activeChar, setActiveChar] = useState<{ id: number; name: string } | null>(null);
 
     useEffect(() => {
         fetchUsers();
@@ -191,6 +196,16 @@ const PlayerManager = () => {
                                             </div>
                                         </div>
                                         <div className="flex space-x-2">
+                                            <button
+                                                onClick={() => {
+                                                    setActiveChar({ id: char.id, name: char.name });
+                                                    setShowInventory(true);
+                                                }}
+                                                className="p-3 bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl text-white/40 hover:text-white transition-all"
+                                                title="Ver Inventário / Banco"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </button>
                                             <button className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all">
                                                 HISTÓRICO
                                             </button>
@@ -207,6 +222,16 @@ const PlayerManager = () => {
                             </div>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {showInventory && activeChar && (
+                    <InventoryBankViewer
+                        roleId={activeChar.id}
+                        charName={activeChar.name}
+                        onClose={() => setShowInventory(false)}
+                    />
                 )}
             </AnimatePresence>
         </div>
