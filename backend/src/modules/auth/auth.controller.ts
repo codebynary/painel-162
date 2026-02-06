@@ -71,3 +71,36 @@ export const login = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+export const register = async (req: Request, res: Response) => {
+    const { username, password, email } = req.body;
+
+    if (!username || !password || !email) {
+        return res.status(400).json({ message: 'Username, password and email are required' });
+    }
+
+    try {
+        // Check if user already exists
+        const [existing] = await pool.execute<RowDataPacket[]>(
+            'SELECT ID FROM users WHERE name = ?',
+            [username]
+        );
+
+        if (existing.length > 0) {
+            return res.status(409).json({ message: 'Username already taken' });
+        }
+
+        const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
+
+        await pool.execute(
+            'INSERT INTO users (name, passwd, email) VALUES (?, ?, ?)',
+            [username, hashedPassword, email]
+        );
+
+        res.status(201).json({ message: 'User registered successfully' });
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
