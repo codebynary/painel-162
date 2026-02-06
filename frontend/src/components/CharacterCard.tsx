@@ -1,64 +1,98 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Sword, Crosshair, Skull, Heart } from 'lucide-react';
+import { Shield, Zap, Sword, Crosshair, Skull, Heart, MapPin, Loader2 } from 'lucide-react';
+import axios from 'axios';
 
 interface Character {
     id: number;
     name: string;
     level: number;
-    cls: number; // Class ID
+    cls: number;
     reputation: number;
     gender: number;
+    roleid: number;
 }
 
-// Map PW class IDs to Names and Icons
 const CLASS_MAP: Record<number, { name: string; icon: React.ReactNode; color: string }> = {
     0: { name: 'Guerreiro', icon: <Sword className="w-5 h-5" />, color: 'text-red-500' },
     1: { name: 'Mago', icon: <Zap className="w-5 h-5" />, color: 'text-blue-500' },
-    2: { name: 'Espiritualista', icon: <Zap className="w-5 h-5" />, color: 'text-purple-500' }, // Psy
+    2: { name: 'Espiritualista', icon: <Zap className="w-5 h-5" />, color: 'text-purple-500' },
     3: { name: 'Feiticeira', icon: <Skull className="w-5 h-5" />, color: 'text-green-500' },
     4: { name: 'Bárbaro', icon: <Shield className="w-5 h-5" />, color: 'text-orange-500' },
     5: { name: 'Mercenário', icon: <Sword className="w-5 h-5" />, color: 'text-red-400' },
     6: { name: 'Arqueiro', icon: <Crosshair className="w-5 h-5" />, color: 'text-emerald-500' },
     7: { name: 'Sacerdote', icon: <Heart className="w-5 h-5" />, color: 'text-cyan-500' },
-    // Add others as needed
-    1024: { name: 'Guerreiro (Mock)', icon: <Sword />, color: 'text-red-500' }, // Init.sql used 1024 for testing
-    1025: { name: 'Mago (Mock)', icon: <Zap />, color: 'text-blue-500' },
 };
 
-const CharacterCard: React.FC<{ character: Character; index: number }> = ({ character, index }) => {
-    const clsInfo = CLASS_MAP[character.cls] || CLASS_MAP[character.roleid] || { name: 'Desconhecido', icon: <Shield />, color: 'text-gray-500' };
-    // Check if init.sql uses 'cls' or 'roleid' for class mapping. The schema has 'cls' and 'roleid'. 
-    // Usually 'cls' is the class ID (0-9/11). 'roleid' is the unique character ID in some contexts or generic ID.
-    // In init.sql I put: (userid, roleid, name, cls, ...) 
-    // But in VALUES I put: (1, 1024, 'AdminChar', 0, ...) -> so cls is 0.
-
+const CharacterCard: React.FC<{ character: Character; index: number; onActionSuccess?: () => void }> = ({ character, index, onActionSuccess }) => {
+    const [isTeleporting, setIsTeleporting] = useState(false);
     const displayClass = CLASS_MAP[character.cls] || { name: 'Desconhecido', icon: <Shield />, color: 'text-gray-500' };
+
+    const handleTeleport = async () => {
+        if (!window.confirm(`Deseja teleportar ${character.name} para a Cidade Inicial?`)) return;
+
+        setIsTeleporting(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`http://localhost:3000/api/characters/${character.roleid}/teleport`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Personagem teleportado com sucesso!');
+            if (onActionSuccess) onActionSuccess();
+        } catch (error: any) {
+            alert(error.response?.data?.message || 'Erro ao teleportar personagem');
+        } finally {
+            setIsTeleporting(false);
+        }
+    };
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-slate-800/50 border border-slate-700 rounded-xl p-5 hover:bg-slate-800 transition-colors flex items-center justify-between group"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.05 }}
+            className="glass-card rounded-2xl p-6 border-white/5 hover:border-brand-red/30 transition-all group relative overflow-hidden"
         >
-            <div className="flex items-center space-x-4">
-                <div className={`w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center border border-slate-700 group-hover:border-slate-600 transition-colors ${displayClass.color}`}>
-                    {displayClass.icon}
-                </div>
-                <div>
-                    <h3 className="font-bold text-white text-lg">{character.name}</h3>
-                    <div className="flex items-center text-sm text-slate-400 space-x-2">
-                        <span>Lv. {character.level}</span>
-                        <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                        <span className={displayClass.color}>{displayClass.name}</span>
+            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-red/5 blur-[40px] rounded-full -mr-16 -mt-16 group-hover:bg-brand-red/10 transition-all"></div>
+
+            <div className="flex items-start justify-between relative z-10">
+                <div className="flex items-center space-x-4">
+                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-brand-red/30 transition-colors shadow-inner ${displayClass.color}`}>
+                        {displayClass.icon}
                     </div>
+                    <div>
+                        <h3 className="font-bold text-white text-xl tracking-tight leading-none mb-1">{character.name}</h3>
+                        <div className="flex items-center text-xs font-semibold text-white/40 space-x-2">
+                            <span className="bg-white/5 px-2 py-0.5 rounded border border-white/5 text-white/60">LV. {character.level}</span>
+                            <span className={displayClass.color}>{displayClass.name.toUpperCase()}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="text-right">
+                    <p className="text-[10px] text-white/20 font-bold tracking-widest uppercase mb-1">Reputação</p>
+                    <p className="text-brand-red font-mono font-bold text-sm tracking-tight">{character.reputation.toLocaleString()}</p>
                 </div>
             </div>
 
-            <div className="text-right">
-                <p className="text-xs text-slate-500 uppercase tracking-wider">Fama</p>
-                <p className="text-slate-300 font-mono">{character.reputation.toLocaleString()}</p>
+            <div className="mt-8 flex items-center space-x-2 relative z-10">
+                <button
+                    onClick={handleTeleport}
+                    disabled={isTeleporting}
+                    className="flex-1 bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl py-3 px-4 text-xs font-bold text-white/60 hover:text-white transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                >
+                    {isTeleporting ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                        <>
+                            <MapPin className="w-4 h-4" />
+                            <span>TELEPORTAR</span>
+                        </>
+                    )}
+                </button>
+                <button className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 transition-all">
+                    <Zap className="w-4 h-4 text-white/40" />
+                </button>
             </div>
         </motion.div>
     );
