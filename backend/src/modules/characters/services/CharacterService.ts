@@ -30,4 +30,17 @@ export class CharacterService {
 
         await CharacterRepository.resetBankPassword(roleId);
     }
+
+    /**
+     * Get inventory and bank items for a character.
+     */
+    static async getCharacterItems(roleId: number) {
+        const inventory = await CharacterRepository.getInventory(roleId);
+        const bank = await CharacterRepository.getBank(roleId);
+
+        return {
+            inventory,
+            bank
+        };
+    }
 }

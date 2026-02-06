@@ -38,3 +38,14 @@ export const resetBank = async (req: Request, res: Response) => {
         res.status(400).json({ message: error.message });
     }
 };
+
+export const getItems = async (req: Request, res: Response) => {
+    const { roleId } = req.params;
+
+    try {
+        const data = await CharacterService.getCharacterItems(Number(roleId));
+        res.json(data);
+    } catch (error: any) {
+        res.status(500).json({ message: 'Erro ao buscar itens do personagem' });
+    }
+};

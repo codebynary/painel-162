@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Sword, Crosshair, Skull, Heart, MapPin, Loader2, Lock as BankLock } from 'lucide-react';
+import { Shield, Zap, Sword, Crosshair, Skull, Heart, MapPin, Loader2, Lock as BankLock, Eye } from 'lucide-react';
 import axios from 'axios';
+import InventoryBankViewer from './InventoryBankViewer';
+import { AnimatePresence } from 'framer-motion';
 
 interface Character {
     id: number;
@@ -27,6 +29,8 @@ const CLASS_MAP: Record<number, { name: string; icon: React.ReactNode; color: st
 const CharacterCard: React.FC<{ character: Character; index: number; onActionSuccess?: () => void }> = ({ character, index, onActionSuccess }) => {
     const [isTeleporting, setIsTeleporting] = useState(false);
     const [isResetting, setIsResetting] = useState(false);
+    const [showInventory, setShowInventory] = useState(false);
+
 
     const displayClass = CLASS_MAP[character.cls] || { name: 'Desconhecido', icon: <Shield />, color: 'text-gray-500' };
 
@@ -124,7 +128,24 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
                         <BankLock className="w-4 h-4 text-white/40" />
                     )}
                 </button>
+                <button
+                    onClick={() => setShowInventory(true)}
+                    className="bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl p-3 transition-all flex items-center justify-center min-w-[48px]"
+                    title="Ver Inventário / Banco"
+                >
+                    <Eye className="w-4 h-4 text-white/40 group-hover:text-white" />
+                </button>
             </div>
+
+            <AnimatePresence>
+                {showInventory && (
+                    <InventoryBankViewer
+                        roleId={character.roleid}
+                        charName={character.name}
+                        onClose={() => setShowInventory(false)}
+                    />
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

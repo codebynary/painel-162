@@ -62,4 +62,26 @@ export class CharacterRepository {
             [roleId]
         );
     }
+
+    /**
+     * Fetch character inventory items.
+     */
+    static async getInventory(roleId: number): Promise<any[]> {
+        const [rows] = await pool.execute<RowDataPacket[]>(
+            'SELECT slot, item_id, count, name, icon FROM pw_users.character_inventory WHERE roleid = ? ORDER BY slot ASC',
+            [roleId]
+        );
+        return rows;
+    }
+
+    /**
+     * Fetch character bank items.
+     */
+    static async getBank(roleId: number): Promise<any[]> {
+        const [rows] = await pool.execute<RowDataPacket[]>(
+            'SELECT slot, item_id, count, name, icon FROM pw_users.character_bank WHERE roleid = ? ORDER BY slot ASC',
+            [roleId]
+        );
+        return rows;
+    }
 }
