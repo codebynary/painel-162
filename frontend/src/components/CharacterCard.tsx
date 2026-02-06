@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, Sword, Crosshair, Skull, Heart, MapPin, Loader2 } from 'lucide-react';
+import { Shield, Zap, Sword, Crosshair, Skull, Heart, MapPin, Loader2, Lock as BankLock } from 'lucide-react';
 import axios from 'axios';
 
 interface Character {
@@ -26,10 +26,12 @@ const CLASS_MAP: Record<number, { name: string; icon: React.ReactNode; color: st
 
 const CharacterCard: React.FC<{ character: Character; index: number; onActionSuccess?: () => void }> = ({ character, index, onActionSuccess }) => {
     const [isTeleporting, setIsTeleporting] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
+
     const displayClass = CLASS_MAP[character.cls] || { name: 'Desconhecido', icon: <Shield />, color: 'text-gray-500' };
 
     const handleTeleport = async () => {
-        if (!window.confirm(`Deseja teleportar ${character.name} para a Cidade Inicial?`)) return;
+        if (!window.confirm(`Deseja DESTRAVAR (Teleportar) ${character.name} para a Cidade Inicial?`)) return;
 
         setIsTeleporting(true);
         try {
@@ -37,7 +39,7 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
             await axios.post(`http://localhost:3000/api/characters/${character.roleid}/teleport`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('Personagem teleportado com sucesso!');
+            alert('Coordenadas resetadas! O personagem foi movido para a Cidade Inicial.');
             if (onActionSuccess) onActionSuccess();
         } catch (error: any) {
             alert(error.response?.data?.message || 'Erro ao teleportar personagem');
@@ -45,6 +47,25 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
             setIsTeleporting(false);
         }
     };
+
+    const handleResetBank = async () => {
+        if (!window.confirm(`Tem certeza que deseja RESETAR a SENHA DO BANCO de ${character.name}?`)) return;
+
+        setIsResetting(true);
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post(`http://localhost:3000/api/characters/${character.roleid}/reset-bank`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Senha do banco resetada com sucesso!');
+            if (onActionSuccess) onActionSuccess();
+        } catch (error: any) {
+            alert(error.response?.data?.message || 'Erro ao resetar senha do banco');
+        } finally {
+            setIsResetting(false);
+        }
+    };
+
 
     return (
         <motion.div
@@ -78,20 +99,30 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
             <div className="mt-8 flex items-center space-x-2 relative z-10">
                 <button
                     onClick={handleTeleport}
-                    disabled={isTeleporting}
-                    className="flex-1 bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl py-3 px-4 text-xs font-bold text-white/60 hover:text-white transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                    disabled={isTeleporting || isResetting}
+                    className="flex-1 bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl py-3 px-4 text-[10px] font-black text-white/40 hover:text-white transition-all flex items-center justify-center space-x-2 disabled:opacity-50 tracking-widest uppercase"
+                    title="Destravar Personagem (Unstuck)"
                 >
                     {isTeleporting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-4 h-4 animate-spin text-brand-red" />
                     ) : (
                         <>
                             <MapPin className="w-4 h-4" />
-                            <span>TELEPORTAR</span>
+                            <span>DESTRAVAR</span>
                         </>
                     )}
                 </button>
-                <button className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-3 transition-all">
-                    <Zap className="w-4 h-4 text-white/40" />
+                <button
+                    onClick={handleResetBank}
+                    disabled={isTeleporting || isResetting}
+                    className="bg-white/5 hover:bg-brand-red/20 border border-white/10 hover:border-brand-red/30 rounded-xl p-3 transition-all flex items-center justify-center min-w-[48px] disabled:opacity-50"
+                    title="Resetar Senha do Banco"
+                >
+                    {isResetting ? (
+                        <Loader2 className="w-4 h-4 animate-spin text-brand-red" />
+                    ) : (
+                        <BankLock className="w-4 h-4 text-white/40" />
+                    )}
                 </button>
             </div>
         </motion.div>

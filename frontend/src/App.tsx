@@ -8,6 +8,8 @@ import PlayerManager from './pages/admin/PlayerManager';
 import StoreManager from './pages/admin/StoreManager';
 import MailManager from './pages/admin/MailManager';
 import BroadcastManager from './pages/admin/BroadcastManager';
+import OnlineTracker from './pages/admin/OnlineTracker';
+import EventManager from './pages/admin/EventManager';
 
 // Simple auth check for now
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -48,6 +50,8 @@ function App() {
           <Route path="store" element={<StoreManager />} />
           <Route path="mail" element={<MailManager />} />
           <Route path="broadcast" element={<BroadcastManager />} />
+          <Route path="onlines" element={<OnlineTracker />} />
+          <Route path="events" element={<EventManager />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/dashboard" replace />} />

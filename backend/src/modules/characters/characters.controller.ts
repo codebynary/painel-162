@@ -22,7 +22,18 @@ export const teleportChar = async (req: Request, res: Response) => {
 
     try {
         await CharacterService.teleportToStart(Number(roleId));
-        res.json({ message: 'Character teleported to start city' });
+        res.json({ message: 'Personagem teleportado para a Cidade Principal' });
+    } catch (error: any) {
+        res.status(400).json({ message: error.message });
+    }
+};
+
+export const resetBank = async (req: Request, res: Response) => {
+    const { roleId } = req.params;
+
+    try {
+        await CharacterService.resetBankPassword(Number(roleId));
+        res.json({ message: 'Senha do banco resetada com sucesso' });
     } catch (error: any) {
         res.status(400).json({ message: error.message });
     }

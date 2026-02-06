@@ -36,7 +36,21 @@ export const banUser = async (req: Request, res: Response) => {
 export const unbanUser = async (req: Request, res: Response) => {
     const { userId } = req.params;
     console.log(`[MOCK ACTION] Unbanning user ${userId}`);
-    res.json({ message: `User ${userId} has been unbanned (Mock)` });
+    res.json({ message: `Conta ${userId} desbanida com sucesso (Mock)` });
+};
+
+export const listOnlines = async (req: Request, res: Response) => {
+    try {
+        // Mock Online Data - In real life, this comes from GProvider/GDelivery
+        const mockOnlines = [
+            { roleid: 1024, name: 'GuerreiroVelo', level: 105, map: 'Mundo (M01)', x: 440, y: 220 },
+            { roleid: 2048, name: 'MagaDoidona', level: 80, map: 'Mundo (M01)', x: 100, y: 150 },
+            { roleid: 3096, name: 'SacerTop', level: 100, map: 'Cidade das Feras', x: 250, y: 300 }
+        ];
+        res.json({ count: mockOnlines.length, players: mockOnlines });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao listar jogadores online' });
+    }
 };
 
 // --- Character Management ---
@@ -80,11 +94,25 @@ export const teleportCharacter = async (req: Request, res: Response) => {
             'UPDATE pw_users.characters SET posx=?, posy=?, posz=?, worldtag=? WHERE id=?',
             [x, y, z, worldtag, charId]
         );
-        res.json({ message: 'Character teleported successfully' });
+        res.json({ message: 'Personagem teleportado com sucesso' });
     } catch (error) {
         console.error('Teleport error:', error);
-        res.status(500).json({ message: 'Failed to teleport' });
+        res.status(500).json({ message: 'Falha ao teleportar' });
     }
+};
+
+export const banCharacter = async (req: Request, res: Response) => {
+    const { charId } = req.params;
+    const { reason, time } = req.body;
+    console.log(`[MOCK ACTION] Banning character ${charId} for ${time}s. Reason: ${reason}`);
+    res.json({ message: `Personagem ${charId} banido por ${time} segundos.` });
+};
+
+export const muteCharacter = async (req: Request, res: Response) => {
+    const { charId } = req.params;
+    const { reason, time } = req.body;
+    console.log(`[MOCK ACTION] Muting character ${charId} for ${time}s. Reason: ${reason}`);
+    res.json({ message: `Personagem ${charId} silenciado por ${time} segundos.` });
 };
 
 export const viewInventory = async (req: Request, res: Response) => {
@@ -247,5 +275,27 @@ export const toggleMap = async (req: Request, res: Response) => {
         res.json({ message: `Map ${mapId} toggled successfully` });
     } catch (error) {
         res.status(500).json({ message: 'Error toggling map' });
+    }
+};
+
+export const setServerRates = async (req: Request, res: Response) => {
+    try {
+        const { exp, drop, money } = req.body;
+        // RPC call to GProvider or gamedbd to set rates
+        console.log(`[EVENT] Setting rates: EXP ${exp}x, DROP ${drop}x, MONEY ${money}x`);
+        res.json({ message: 'Taxas do servidor atualizadas com sucesso' });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao definir taxas' });
+    }
+};
+
+export const createPromoCode = async (req: Request, res: Response) => {
+    try {
+        const { code, gold, items } = req.body;
+        // Save to DB
+        console.log(`[PROMO] Created code ${code} with ${gold} gold`);
+        res.json({ message: `Cupom ${code} gerado com sucesso` });
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao gerar cupom' });
     }
 };

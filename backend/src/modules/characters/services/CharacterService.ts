@@ -10,18 +10,24 @@ export class CharacterService {
     }
 
     /**
-     * Logic to reset character coordinates (Teleport).
-     * This bridges with the RPC layer if necessary or direct SQL if gamedbd allows.
+     * Logic to reset character coordinates (Teleport/Unstuck).
      */
-    static async teleportToStart(roleId: number): Promise<boolean> {
+    static async teleportToStart(roleId: number): Promise<void> {
         const character = await CharacterRepository.findByRoleId(roleId);
-        if (!character) throw new Error('Character not found');
+        if (!character) throw new Error('Personagem não encontrado');
 
-        // In a future expansion, we might call GDeliveryClient.teleport(roleId, 128, 200, 128)
-        // For now, let's assume we update the DB direct (if server is offline or uses direct DB sync)
-        // Actually, premium approach should use RPC if available. 
-        // GDeliveryClient logic is in src/modules/rpc.
+        // Safe Coordinates: Cidade das Espadas (Default)
+        // world_id: 1, X: 440, Y: 220, Z: 880 (Approximation)
+        await CharacterRepository.updatePosition(roleId, 1, 440, 220, 880);
+    }
 
-        return true; // Mock success for now
+    /**
+     * Logic to reset character bank password.
+     */
+    static async resetBankPassword(roleId: number): Promise<void> {
+        const character = await CharacterRepository.findByRoleId(roleId);
+        if (!character) throw new Error('Personagem não encontrado');
+
+        await CharacterRepository.resetBankPassword(roleId);
     }
 }

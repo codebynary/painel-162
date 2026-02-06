@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, LogOut, Shield, ArrowLeft, ShoppingBag, Mail, Megaphone } from 'lucide-react';
+import { LayoutDashboard, Users, LogOut, Shield, ArrowLeft, ShoppingBag, Mail, Megaphone, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AdminLayout = () => {
@@ -74,6 +74,24 @@ const AdminLayout = () => {
                         >
                             <Megaphone className="w-5 h-5" />
                             <span className="text-xs font-black tracking-widest uppercase">Broadcast</span>
+                        </motion.div>
+                    </Link>
+                    <Link to="/admin/onlines">
+                        <motion.div
+                            whileHover={{ x: 5 }}
+                            className={`flex items-center space-x-3 px-6 py-4 rounded-2xl transition-all ${isActive('/admin/onlines') ? 'bg-brand-red text-white shadow-[0_0_20px_rgba(204,0,0,0.2)]' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}`}
+                        >
+                            <Users className="w-5 h-5" />
+                            <span className="text-xs font-black tracking-widest uppercase">Online Now</span>
+                        </motion.div>
+                    </Link>
+                    <Link to="/admin/events">
+                        <motion.div
+                            whileHover={{ x: 5 }}
+                            className={`flex items-center space-x-3 px-6 py-4 rounded-2xl transition-all ${isActive('/admin/events') ? 'bg-brand-red text-white shadow-[0_0_20px_rgba(204,0,0,0.2)]' : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10'}`}
+                        >
+                            <Zap className="w-5 h-5" />
+                            <span className="text-xs font-black tracking-widest uppercase">Eventos</span>
                         </motion.div>
                     </Link>
                 </nav>
