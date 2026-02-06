@@ -8,6 +8,7 @@ Este documento estabelece as regras de ouro para o desenvolvimento deste projeto
 2. **Registro de Commits**: Cada mudança significativa deve ser documentada. Explique o "porquê" e não apenas o "o quê".
 3. **Qualidade Premium**: O código deve ser limpo, tipado (TypeScript) e seguir padrões modernos de UX/UI (Glassmorphism, Dark UI).
 4. **Sem Docker/WSL**: No ambiente atual, **não utilize Docker ou WSL**. O projeto deve rodar de forma nativa via `npm run dev`.
+5. **Arquitetura Expansiva**: SEMPRE use o **Repository Pattern** para acesso a dados e o **Service Layer** para lógica de negócio. Isso permite que outros desenvolvedores estendam o painel sem quebrar o core.
 
 ## 🏗️ Padrões de Código
 

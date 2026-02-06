@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Button from '../components/ui/Button';
 import CharacterCard from '../components/CharacterCard';
 import axios from 'axios';
 import { LogOut, RefreshCcw } from 'lucide-react';
