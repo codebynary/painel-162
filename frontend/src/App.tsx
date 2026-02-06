@@ -7,6 +7,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import PlayerManager from './pages/admin/PlayerManager';
 import StoreManager from './pages/admin/StoreManager';
 import MailManager from './pages/admin/MailManager';
+import BroadcastManager from './pages/admin/BroadcastManager';
 
 // Simple auth check for now
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -46,6 +47,7 @@ function App() {
           <Route path="players" element={<PlayerManager />} />
           <Route path="store" element={<StoreManager />} />
           <Route path="mail" element={<MailManager />} />
+          <Route path="broadcast" element={<BroadcastManager />} />
         </Route>
 
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
