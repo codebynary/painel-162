@@ -95,9 +95,10 @@ graph TD
 - **Gerenciamento de Estado**: React Hooks nativos
 
 ### 🔹 Infraestrutura
-- **Deployment**: Docker & Docker Compose
-- **Orquestração**: PM2 para processos em Node.js
-- **Proxy**: Nginx para balanceamento e segurança
+- **Deployment**: Execução nativa (Node.js 20+)
+- **Orquestração**: PM2 para processos em Node.js (Ambiente de Produção)
+- **Proxy**: Nginx (Configuração futura)
+*Nota: Docker e WSL estão desabilitados temporariamente por limitações de ambiente.*
 
 ---
 
@@ -105,49 +106,35 @@ graph TD
 
 ```bash
 painel-162/
-├── backend/            # API Core, Lógica de Negócios e Conexão DB
-├── frontend/           # Interface do Usuário (Single Page Application)
-├── scripts/            # Scripts Shell para automação e integração PW
-├── docker-compose.yml  # Definição dos containers (Dev/Prod)
-└── README.md           # Você está aqui!
+├── backend/            # API Core (Node.js + TS)
+├── frontend/           # Interface (React 19 + Vite)
+├── scripts/            # Integração e automação do servidor
+└── README.md           # Central de Informações
 ```
 
 ---
 
-## 🚀 Guia de Instalação Quickstart
+## 🚀 Guia de Início Rápido (Nativo)
 
-### Pré-requisitos
-- Node.js 18+
-- Docker & Docker Compose
-- Git
-
-### 1. Clonar e Instalar Dependências
+### 1. Instalar Dependências
 ```bash
-git clone https://github.com/code-bynary/painel-162.git
-cd painel-162
+# Backend
+cd backend && npm install
 
-# Instalar Backend
-cd backend && npm install && cd ..
-
-# Instalar Frontend
-cd frontend && npm install && cd ..
+# Frontend
+cd frontend && npm install
 ```
 
-### 2. Subir Infraestrutura (Docker)
+### 2. Configurar Variáveis de Ambiente
+Renomeie `.env.example` para `.env` em ambas as pastas.
+
+### 3. Modo Desenvolvimento
 ```bash
-docker-compose up -d --build
-```
+# Terminal 1: Backend
+npm run dev (dentro da pasta backend)
 
-### 3. Configurar Variáveis de Ambiente
-Renomeie `.env.example` para `.env` tanto no `frontend` quanto no `backend` e configure as chaves secretas.
-
-### 4. Modo Desenvolvimento
-```bash
-# Terminal 1
-cd backend && npm run dev
-
-# Terminal 2
-cd frontend && npm run dev
+# Terminal 2: Frontend
+npm run dev (dentro da pasta frontend)
 ```
 
 ---
