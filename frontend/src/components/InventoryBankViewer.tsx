@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Package, Briefcase, ChevronRight, X, Loader2, Info, MapPin } from 'lucide-react';
+import { Package, Briefcase, X, Loader2, Info, MapPin } from 'lucide-react';
 import axios from 'axios';
 
 interface Item {
@@ -43,16 +44,27 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
     }, [roleId]);
 
     const currentItems = activeTab === 'inventory' ? data?.inventory : data?.bank;
-    const totalSlots = activeTab === 'inventory' ? 64 : 80; // Standard PW sizes
+    const totalSlots = activeTab === 'inventory' ? 64 : 80;
+
+    // Close on escape key
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') onClose();
+        };
+        window.addEventListener('keydown', handleEsc);
+        return () => window.removeEventListener('keydown', handleEsc);
+    }, [onClose]);
 
     const renderGrid = () => {
         const grid = [];
         for (let i = 0; i < totalSlots; i++) {
             const item = currentItems?.find(it => it.slot === i);
+            const isHovered = hoveredItem?.slot === i && hoveredItem?.item_id === item?.item_id;
+
             grid.push(
                 <div
                     key={i}
-                    className="relative w-12 h-12 md:w-14 md:h-14 bg-white/[0.03] border border-white/10 rounded-lg flex items-center justify-center group hover:border-brand-red/40 transition-all cursor-pointer overflow-hidden"
+                    className={`relative w-10 h-10 md:w-12 md:h-12 bg-black/40 border ${isHovered ? 'border-brand-red/80' : 'border-white/5'} rounded overflow-hidden group hover:border-brand-red/60 transition-all cursor-pointer shadow-[inset_0_0_10px_rgba(0,0,0,0.8)]`}
                     onMouseEnter={() => item && setHoveredItem(item)}
                     onMouseLeave={() => setHoveredItem(null)}
                 >
@@ -62,9 +74,8 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
                             <img
                                 src={`/assets/items/${item.item_id}.png`}
                                 alt={item.name}
-                                className="w-8 h-8 md:w-10 md:h-10 relative z-10"
+                                className="w-8 h-8 md:w-10 md:h-10 relative z-10 m-auto mt-1"
                                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-                                    // Fallback to external API if local not found
                                     const target = e.currentTarget as HTMLImageElement;
                                     target.src = `https://api.velorianpw.com/icons/${item.item_id}.png`;
                                     target.onerror = () => {
@@ -73,14 +84,14 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
                                 }}
                             />
                             {item.count > 1 && (
-                                <span className="absolute bottom-1 right-1 text-[9px] font-black text-white bg-black/60 px-1 rounded z-20 pointer-events-none">
+                                <span className="absolute bottom-0.5 right-0.5 text-[8px] font-bold text-white bg-black/80 px-1 rounded-sm z-20 pointer-events-none border border-white/10">
                                     {item.count}
                                 </span>
                             )}
                         </>
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center opacity-10">
-                            <div className="w-1 h-1 bg-white rounded-full"></div>
+                        <div className="absolute inset-0 flex items-center justify-center opacity-[0.03]">
+                            <div className="w-full h-full border border-white/10 transform rotate-45 scale-50"></div>
                         </div>
                     )}
                 </div>
@@ -89,98 +100,170 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
         return grid;
     };
 
-    return (
+    const modalContent = (
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-md font-inter"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 bg-black/90 backdrop-blur-md font-inter"
+            onClick={onClose}
         >
             <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                className="w-full max-w-4xl glass-card rounded-[40px] border-white/10 overflow-hidden relative"
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+                className="w-full max-w-6xl h-[85vh] bg-[#050505] border border-white/10 rounded-xl overflow-hidden relative flex flex-col shadow-2xl shadow-black/80"
+                onClick={(e) => e.stopPropagation()}
             >
-                {/* Grainy Overlay */}
-                <div className="absolute inset-0 grainy-bg z-0 opacity-40 pointer-events-none"></div>
-
-                <div className="p-8 md:p-12 relative z-10">
-                    <div className="flex justify-between items-start mb-10">
-                        <div>
-                            <p className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-2">Visualizador de Itens</p>
-                            <h2 className="text-3xl font-black text-white tracking-tighter uppercase">{charName}</h2>
+                {/* Header */}
+                <div className="h-16 border-b border-white/5 bg-black/40 flex items-center justify-between px-6 shrink-0 relative z-20">
+                    <div className="flex items-center gap-4">
+                        <div className="p-2 bg-brand-red/10 border border-brand-red/20 rounded-lg">
+                            <Package className="w-5 h-5 text-brand-red" />
                         </div>
-                        <button
-                            onClick={onClose}
-                            className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all group"
-                        >
-                            <X className="w-5 h-5 text-white/40 group-hover:text-white" />
-                        </button>
+                        <div>
+                            <h2 className="text-lg font-bold text-white uppercase tracking-tight">{charName}</h2>
+                            <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Gerenciador de Itens</p>
+                        </div>
                     </div>
+                    <button
+                        onClick={onClose}
+                        className="p-2 hover:bg-white/5 rounded-lg transition-colors group"
+                    >
+                        <X className="w-5 h-5 text-white/40 group-hover:text-white transition-colors" />
+                    </button>
+                </div>
 
-                    <div className="flex gap-4 mb-8">
+                {/* Main Content Area - 3 Column Layout */}
+                <div className="flex-1 flex overflow-hidden">
+
+                    {/* Col 1: Navigation Sidebar */}
+                    <div className="w-64 bg-black/20 border-r border-white/5 p-4 flex flex-col gap-2 shrink-0">
+                        <p className="px-2 mb-2 text-[9px] font-black text-white/20 uppercase tracking-widest">Armazenamento</p>
+
                         <button
                             onClick={() => setActiveTab('inventory')}
-                            className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeTab === 'inventory' ? 'bg-brand-red border-brand-red text-white shadow-glow' : 'bg-white/5 border-white/10 text-white/40 hover:text-white'}`}
+                            className={`flex items-center gap-3 p-3 rounded-lg border transition-all text-sm font-medium ${activeTab === 'inventory'
+                                    ? 'bg-brand-red/10 border-brand-red/30 text-white'
+                                    : 'bg-transparent border-transparent text-white/40 hover:bg-white/5 hover:text-white'
+                                }`}
                         >
-                            <Package className="w-4 h-4" />
-                            Inventário
+                            <Package className={`w-4 h-4 ${activeTab === 'inventory' ? 'text-brand-red' : ''}`} />
+                            <span>Inventário</span>
+                            <span className="ml-auto text-xs opacity-50 font-mono">64</span>
                         </button>
+
                         <button
                             onClick={() => setActiveTab('bank')}
-                            className={`flex-1 flex items-center justify-center gap-3 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeTab === 'bank' ? 'bg-brand-red border-brand-red text-white shadow-glow' : 'bg-white/5 border-white/10 text-white/40 hover:text-white'}`}
+                            className={`flex items-center gap-3 p-3 rounded-lg border transition-all text-sm font-medium ${activeTab === 'bank'
+                                    ? 'bg-brand-red/10 border-brand-red/30 text-white'
+                                    : 'bg-transparent border-transparent text-white/40 hover:bg-white/5 hover:text-white'
+                                }`}
                         >
-                            <Briefcase className="w-4 h-4" />
-                            Banco (Baú)
+                            <Briefcase className={`w-4 h-4 ${activeTab === 'bank' ? 'text-brand-red' : ''}`} />
+                            <span>Banco</span>
+                            <span className="ml-auto text-xs opacity-50 font-mono">80</span>
                         </button>
+
+                        <div className="mt-auto p-4 rounded-xl bg-gradient-to-b from-transparent to-brand-red/5 border border-white/5">
+                            <div className="flex items-center gap-2 mb-2">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
+                                <span className="text-[10px] font-bold text-white/60 uppercase tracking-wider">Sincronizado</span>
+                            </div>
+                            <p className="text-[10px] text-white/30 leading-snug">
+                                Dados recuperados do servidor PW em tempo real via GamedBD.
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="relative min-h-[400px]">
-                        {isLoading ? (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4">
-                                <Loader2 className="w-10 h-10 text-brand-red animate-spin" />
-                                <p className="text-[10px] font-black text-white/20 uppercase tracking-widest">Lendo dados binários...</p>
-                            </div>
+                    {/* Col 2: Item Grid (Scrollable) */}
+                    <div className="flex-1 bg-[#0a0a0a] relative flex flex-col">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6">
+                            {isLoading ? (
+                                <div className="h-full flex flex-col items-center justify-center gap-4 opacity-50">
+                                    <Loader2 className="w-8 h-8 text-brand-red animate-spin" />
+                                    <p className="text-xs font-bold text-white/30 uppercase tracking-widest">Carregando Itens...</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 content-start justify-items-center">
+                                    {renderGrid()}
+                                </div>
+                            )}
+                        </div>
+                        {/* Grid Footer Information */}
+                        <div className="h-10 border-t border-white/5 bg-black/40 flex items-center justify-between px-6 text-[10px] font-mono text-white/20">
+                            <span>SLOTS: {activeTab === 'inventory' ? '64' : '80'} / {totalSlots}</span>
+                            <span>CAPACITY: 100%</span>
+                        </div>
+                    </div>
+
+                    {/* Col 3: Details Panel */}
+                    <div className="w-80 bg-black/20 border-l border-white/5 p-6 flex flex-col shrink-0 relative bg-[url('/assets/grid-pattern.png')] bg-repeat opacity-95">
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/80 pointer-events-none"></div>
+
+                        {hoveredItem ? (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="space-y-6 relative z-10"
+                            >
+                                <div className="aspect-square w-full rounded-xl bg-black/40 border border-white/10 flex items-center justify-center relative overflow-hidden group shadow-inner">
+                                    <div className="absolute inset-0 bg-brand-red/5 blur-2xl group-hover:bg-brand-red/10 transition-all"></div>
+                                    <img
+                                        src={`/assets/items/${hoveredItem.item_id}.png`}
+                                        alt={hoveredItem.name}
+                                        className="w-24 h-24 object-contain drop-shadow-2xl relative z-10"
+                                        onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+                                            (e.currentTarget as HTMLImageElement).src = `https://api.velorianpw.com/icons/${hoveredItem.item_id}.png`;
+                                        }}
+                                    />
+                                </div>
+
+                                <div>
+                                    <h3
+                                        className="text-xl font-bold uppercase leading-tight tracking-wide drop-shadow-md border-b border-white/10 pb-4 mb-4"
+                                        style={{ color: hoveredItem.name_color ? `#${hoveredItem.name_color}` : '#FFFFFF' }}
+                                    >
+                                        {hoveredItem.name}
+                                    </h3>
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                                            <span className="text-xs font-bold text-white/40 uppercase">Quantidade</span>
+                                            <span className="text-sm font-mono font-bold text-white">{hoveredItem.count}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                                            <span className="text-xs font-bold text-white/40 uppercase">ID do Item</span>
+                                            <span className="text-sm font-mono text-brand-red">{hoveredItem.item_id}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center bg-white/5 p-3 rounded-lg border border-white/5">
+                                            <span className="text-xs font-bold text-white/40 uppercase">Slot</span>
+                                            <span className="text-sm font-mono text-white/60">{hoveredItem.slot}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-4 bg-brand-red/5 border border-brand-red/10 rounded-xl mt-4">
+                                    <p className="text-[10px] text-brand-red/80 font-medium italic text-center leading-relaxed">
+                                        "Este item é propriedade do personagem e está protegido pelo sistema do servidor."
+                                    </p>
+                                </div>
+                            </motion.div>
                         ) : (
-                            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-3 md:gap-4 justify-items-center">
-                                {renderGrid()}
+                            <div className="h-full flex flex-col items-center justify-center text-center opacity-30 space-y-4">
+                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center border border-white/5">
+                                    <Info className="w-8 h-8 text-white" />
+                                </div>
+                                <p className="text-xs font-black uppercase tracking-widest text-white/50 max-w-[150px]">
+                                    Passe o mouse sobre um item para ver detalhes
+                                </p>
                             </div>
                         )}
-
-                        {/* Tooltip */}
-                        <AnimatePresence>
-                            {hoveredItem && (
-                                <motion.div
-                                    initial={{ opacity: 0, x: 10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 10 }}
-                                    className="absolute top-0 right-0 w-64 glass-card p-6 border-brand-red/30 shadow-2xl z-50 pointer-events-none"
-                                >
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="p-2 bg-brand-red/10 rounded-lg">
-                                            <Info className="w-4 h-4 text-brand-red" />
-                                        </div>
-                                        <h4
-                                            className="font-bold text-sm uppercase leading-tight"
-                                            style={{ color: hoveredItem.name_color ? `#${hoveredItem.name_color}` : '#FFFFFF' }}
-                                        >
-                                            {hoveredItem.name}
-                                        </h4>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Quantidade: <span className="text-white/60">{hoveredItem.count}</span></p>
-                                        <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Item ID: <span className="text-white/60">{hoveredItem.item_id}</span></p>
-                                    </div>
-                                    <div className="mt-4 pt-4 border-t border-white/5">
-                                        <p className="text-[10px] text-white/40 italic font-medium leading-relaxed">Este item está vinculado ao personagem e não pode ser negociado via painel.</p>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
                     </div>
                 </div>
 
-                <div className="bg-white/[0.02] border-t border-white/5 p-6 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-white/20">
+                <div className="bg-white/[0.02] border-t border-white/5 p-4 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-white/20">
                     <div className="flex items-center gap-2">
                         <MapPin className="w-3 h-3" /> Visualização Remota Ativa
                     </div>
@@ -194,6 +277,9 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
             </motion.div>
         </motion.div>
     );
+
+    // Use React Portal to render at document root level, avoiding parent overflow/transform issues
+    return createPortal(modalContent, document.body);
 };
 
 export default InventoryBankViewer;

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Lock, User, Youtube, Facebook, MessageSquare } from 'lucide-react';
 import logo from '../assets/logo-velorian.png';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -125,12 +125,12 @@ const Login = () => {
                     </motion.button>
 
                     <div className="flex items-center justify-between mt-6 px-2">
-                        <a href="#" className="text-xs font-semibold text-white/30 hover:text-brand-red transition-colors capitalize">
+                        <Link to="/register" className="text-xs font-semibold text-white/30 hover:text-brand-red transition-colors capitalize">
                             Criar Conta
-                        </a>
-                        <a href="#" className="text-xs font-semibold text-white/30 hover:text-brand-red transition-colors capitalize">
+                        </Link>
+                        <Link to="/recovery" className="text-xs font-semibold text-white/30 hover:text-brand-red transition-colors capitalize">
                             Recuperar Senha
-                        </a>
+                        </Link>
                     </div>
                 </form>
 

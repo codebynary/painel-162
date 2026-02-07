@@ -9,7 +9,9 @@ export const getUserCharacters = async (req: Request, res: Response) => {
     }
 
     try {
+        console.log(`[CHAR-DEBUG] Controller received userId: ${userId} from token`);
         const characters = await CharacterService.getUserCharacters(userId);
+        console.log(`[CHAR-DEBUG] Service returned ${characters.length} characters`);
         res.json(characters);
     } catch (error) {
         console.error('Error fetching characters:', error);

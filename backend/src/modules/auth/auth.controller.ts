@@ -76,7 +76,23 @@ export const register = async (req: Request, res: Response) => {
     const { username, password, email } = req.body;
 
     if (!username || !password || !email) {
-        return res.status(400).json({ message: 'Username, password and email are required' });
+        return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Formato de e-mail inválido' });
+    }
+
+    // Username validation (standard PW often 4-12 chars)
+    if (username.length < 4 || username.length > 12) {
+        return res.status(400).json({ message: 'O usuário deve ter entre 4 e 12 caracteres' });
+    }
+
+    // Simple password strength check
+    if (password.length < 6) {
+        return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres' });
     }
 
     try {
@@ -87,7 +103,16 @@ export const register = async (req: Request, res: Response) => {
         );
 
         if (existing.length > 0) {
-            return res.status(409).json({ message: 'Username already taken' });
+            return res.status(409).json({ message: 'Este nome de usuário já está sendo usado' });
+        }
+
+        const [existingEmail] = await pool.execute<RowDataPacket[]>(
+            'SELECT ID FROM users WHERE email = ?',
+            [email]
+        );
+
+        if (existingEmail.length > 0) {
+            return res.status(409).json({ message: 'Este e-mail já está em uso' });
         }
 
         const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
@@ -97,10 +122,10 @@ export const register = async (req: Request, res: Response) => {
             [username, hashedPassword, email]
         );
 
-        res.status(201).json({ message: 'User registered successfully' });
+        res.status(201).json({ message: 'Conta criada com sucesso!' });
 
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Erro interno ao processar o registro' });
     }
 };

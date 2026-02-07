@@ -1,10 +1,11 @@
 {
     "name": "painel-162-backend",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "description": "Painel Perfect World - Version Inicial 162 (Backend)",
     "main": "dist/server.js",
     "scripts": {
         "dev": "nodemon src/server.ts",
+        "fix-db": "ts-node src/scripts/fix_db_schema.ts",
         "build": "tsc",
         "start": "node dist/server.js"
     },
@@ -16,6 +17,7 @@
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "express": "^4.18.2",
+        "express-rate-limit": "^8.2.1",
         "helmet": "^7.1.0",
         "jsonwebtoken": "^9.0.2",
         "mysql2": "^3.6.5",

@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import Recovery from './pages/Recovery';
 import Dashboard from './pages/Dashboard';
 import Donate from './pages/Donate';
 import AdminLayout from './layouts/AdminLayout';
@@ -25,6 +27,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/recovery" element={<Recovery />} />
         <Route
           path="/dashboard"
           element={
