@@ -2,7 +2,7 @@
 
 ![Painel Perfect World Banner](assets/images/banner.png)
 
-# 🌌 Painel Perfect World v1.6.2
+# 🌌 Painel Perfect World v1.7.0
 ### A Modern, Robust, and Secure Management Suite for PW Servers
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -68,15 +68,17 @@ graph TD
 - **Logo Premium**: Integração de logo com fundo transparente para design limpo.
 - **Gestão de Personagens**: Cards interativos com ícones de classe, função de **Teleporte de Emergência** e fallback inteligente de personagens.
 - **Saldo & Status**: Visualização de GOLD e status do servidor em tempo real (com sistema de fallback "WOW" fator).
-- **Loja de Gold & Histórico**: Interface de compra de pacotes com bônus e aba dedicada ao histórico de transações.
+- **Loja de Gold & Histórico**: Interface de compra de pacotes com bônus, histórico detalhado e **Modal de Sucesso Premium**.
+- **Simulação de Pagamento**: Fluxo profissional que simula janelas de checkout e persiste saldo real no banco de dados.
+- **Scrollbar Velorian**: Barra de rolagem minimalista e reativa integrada ao tema escuro.
 - **Segurança**: Fluxo de autenticação JWT e registro integrado.
 
 ### 🛡️ Portal Administrativo (Central de Controle)
 - **Dashboard Admin**: Visão consolidada de jogadores online, faturamento e saúde do servidor.
-- **Monitor de Processos**: Status em tempo real dos serviços core (`gauthd`, `gamedbd`, etc) com mocks de alta disponibilidade.
+- **Monitor de Processos Full**: Status em tempo real de **11 daemons core** (gauthd, gamedbd, uniquenamed, auction, etc).
 - **Gestão de Energia**: Botões para inicializar (`Start`) ou desligar (`Shutdown`) o servidor com segurança.
 - **Player Manager Avançado**: Busca global, visualização de personagens e controle de punições/suporte.
-- **Controle de Mapas**: Interface para visualizar e gerenciar IDs de instâncias ativas.
+- **Map Control Pro**: Interface scrollable otimizada para gerenciar dezenas de instâncias ativas simultaneamente.
 
 ---
 
