@@ -20,7 +20,7 @@ export class CharacterRepository {
             `SELECT id, roleid, name, cls, level, gender, reputation 
        FROM pw_users.characters 
        WHERE userid = ? AND status = 1`,
-            [userId]
+            [Number(userId)]
         );
 
         return rows as Character[];

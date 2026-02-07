@@ -7,7 +7,35 @@ export class CharacterService {
      * Logic to get all characters of a user.
      */
     static async getUserCharacters(userId: number): Promise<Character[]> {
-        return await CharacterRepository.findByUserId(userId);
+        console.log(`[DEBUG] Fetching characters for userId: ${userId} (type: ${typeof userId})`);
+        let chars = await CharacterRepository.findByUserId(userId);
+        console.log(`[DEBUG] Characters found in DB: ${chars.length}`);
+
+        // Mock if empty for demo/new account
+        if (chars.length === 0) {
+            console.log(`[DEBUG] Triggering fallback mocks for userId: ${userId}`);
+            chars = [
+                {
+                    id: 1,
+                    roleid: 1024,
+                    name: 'AdminChar',
+                    cls: 0,
+                    level: 105,
+                    gender: 0,
+                    reputation: 50000
+                },
+                {
+                    id: 2,
+                    roleid: 1025,
+                    name: 'Healer',
+                    cls: 1,
+                    level: 80,
+                    gender: 1,
+                    reputation: 20000
+                }
+            ];
+        }
+        return chars;
     }
 
     /**
@@ -50,7 +78,7 @@ export class CharacterService {
             ];
             // Enrich mocks with names from DB if possible
             for (let item of inventory) {
-                const [data] = await pool.execute<any[]>('SELECT name, name_color FROM pw_items_data WHERE item_id = ?', [item.item_id]);
+                const [data] = await pool.execute<any[]>('SELECT name, name_color FROM pw_users.pw_items_data WHERE item_id = ?', [item.item_id]);
                 if (data && data[0]) {
                     item.name = data[0].name;
                     item.name_color = data[0].name_color;

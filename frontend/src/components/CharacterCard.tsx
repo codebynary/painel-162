@@ -82,25 +82,21 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
 
             <div className="flex items-start justify-between relative z-10">
                 <div className="flex items-center space-x-4">
-                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-brand-red/30 transition-colors shadow-inner ${displayClass.color}`}>
-                        {displayClass.asset ? (
+                    <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-brand-red/30 transition-colors shadow-inner relative ${displayClass.color}`}>
+                        {displayClass.asset && (
                             <img
                                 src={`/assets/classes/${displayClass.asset}`}
                                 alt={displayClass.name}
-                                className="w-10 h-10 object-contain"
+                                className="w-10 h-10 object-contain absolute inset-0 m-auto z-10"
                                 onError={(e) => {
-                                    // Fallback to lucide icon if image fails
-                                    const target = e.target as HTMLElement;
-                                    target.style.display = 'none';
-                                    const parent = target.parentElement;
-                                    if (parent) {
-                                        // We can't easily inject a React component here via vanilla DOM,
-                                        // so we rely on the parent having the icon rendered as well or 
-                                        // just showing the fallback if the image is hidden.
-                                    }
+                                    const target = e.currentTarget as HTMLElement;
+                                    target.style.opacity = '0';
                                 }}
                             />
-                        ) : displayClass.icon}
+                        )}
+                        <div className="z-0 opacity-40 group-hover:opacity-100 transition-opacity">
+                            {displayClass.icon}
+                        </div>
                     </div>
                     <div>
                         <h3 className="font-bold text-white text-xl tracking-tight leading-none mb-1">{character.name}</h3>

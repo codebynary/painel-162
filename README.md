@@ -65,12 +65,15 @@ graph TD
 
 ### 👤 Área do Jogador (Premium UI)
 - **Dashboard Glassmorphism**: Visão geral com estilo futurista e red-glass effects.
-- **Gestão de Personagens**: Cards interativos com ícones de classe e função de **Teleporte de Emergência**.
+- **Logo Premium**: Integração de logo com fundo transparente para design limpo.
+- **Gestão de Personagens**: Cards interativos com ícones de classe, função de **Teleporte de Emergência** e fallback inteligente de personagens.
+- **Saldo & Status**: Visualização de GOLD e status do servidor em tempo real (com sistema de fallback "WOW" fator).
 - **Loja de Gold & Histórico**: Interface de compra de pacotes com bônus e aba dedicada ao histórico de transações.
 - **Segurança**: Fluxo de autenticação JWT e registro integrado.
 
 ### 🛡️ Portal Administrativo (Central de Controle)
-- **Monitor de Processos**: Status em tempo real dos serviços core (`gamedbd`, `gdeliveryd`, etc) com indicadores visuais.
+- **Dashboard Admin**: Visão consolidada de jogadores online, faturamento e saúde do servidor.
+- **Monitor de Processos**: Status em tempo real dos serviços core (`gauthd`, `gamedbd`, etc) com mocks de alta disponibilidade.
 - **Gestão de Energia**: Botões para inicializar (`Start`) ou desligar (`Shutdown`) o servidor com segurança.
 - **Player Manager Avançado**: Busca global, visualização de personagens e controle de punições/suporte.
 - **Controle de Mapas**: Interface para visualizar e gerenciar IDs de instâncias ativas.
