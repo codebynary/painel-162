@@ -51,8 +51,14 @@ export class DonateService {
     }
 
     static async getBalance(userId: number): Promise<number> {
-        // Mock balance logic for demo
-        if (userId === 1) return 50000;
-        return 0;
+        const balance = await DonateRepository.getBalance(userId);
+
+        // Initial gift for new users/admins in demo
+        if (userId === 1 && balance === 0) {
+            await DonateRepository.addBalance(1, 10000);
+            return 10000;
+        }
+
+        return balance;
     }
 }

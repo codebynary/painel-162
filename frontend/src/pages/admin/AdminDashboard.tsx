@@ -156,16 +156,16 @@ const AdminDashboard = () => {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 relative z-10">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 relative z-10">
                         {isLoadingStatus ? (
-                            Array(5).fill(0).map((_, i) => (
+                            Array(10).fill(0).map((_, i) => (
                                 <div key={i} className="h-28 bg-white/5 animate-pulse rounded-2xl"></div>
                             ))
                         ) : processStatus.map((proc, i) => (
-                            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center group hover:border-white/20 transition-all relative overflow-hidden">
+                            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center group hover:border-brand-red/30 transition-all relative overflow-hidden">
                                 <div className={`w-3 h-3 rounded-full mb-4 shadow-[0_0_15px_currentColor] ${proc.running ? 'text-emerald-500 bg-emerald-500' : 'text-red-500 bg-red-500'}`}></div>
-                                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] mb-2">{proc.name}</span>
-                                <span className={`text-xs font-black tracking-tighter ${proc.running ? 'text-white' : 'text-white/20'}`}>
+                                <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-2">{proc.name}</span>
+                                <span className={`text-[10px] font-black tracking-widest ${proc.running ? 'text-white' : 'text-white/20'}`}>
                                     {proc.running ? 'ONLINE' : 'OFFLINE'}
                                 </span>
                             </div>
@@ -175,34 +175,46 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Map Control Sidebar */}
-                <div className="lg:col-span-4 space-y-8">
-                    <div className="glass-card rounded-3xl p-8 border-white/5 relative overflow-hidden">
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-lg font-bold text-white flex items-center">
-                                <Map className="w-5 h-5 mr-3 text-brand-red" />
-                                MAPAS ATIVOS
-                            </h3>
-                            <span className="text-[10px] font-black bg-brand-red/10 text-brand-red px-2 py-1 rounded border border-brand-red/20">
-                                {activeMaps.length} ON
+                <div className="lg:col-span-4 space-y-8 h-full">
+                    <div className="glass-card rounded-3xl p-8 border-white/5 relative overflow-hidden h-full flex flex-col">
+                        <div className="flex justify-between items-center mb-10">
+                            <div>
+                                <h3 className="text-lg font-black text-white flex items-center tracking-tighter">
+                                    <Map className="w-5 h-5 mr-3 text-brand-red" />
+                                    MAPAS ATIVOS
+                                </h3>
+                                <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest mt-1">Gerenciamento de Instâncias</p>
+                            </div>
+                            <span className="text-[10px] font-black bg-brand-red/10 text-brand-red px-3 py-1.5 rounded-full border border-brand-red/20 shadow-[0_0_15px_rgba(204,0,0,0.1)]">
+                                {activeMaps.length} RODANDO
                             </span>
                         </div>
 
-                        <div className="space-y-4">
+                        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             {[
                                 { id: 1, name: 'Mundo (M01)' },
                                 { id: 31, name: 'Vale Primordial' },
-                                { id: 101, name: 'DGs Iniciais' },
-                                { id: 108, name: 'Cidade das Feras' }
+                                { id: 101, name: 'DG 19 (Humanos)' },
+                                { id: 102, name: 'DG 19 (Feras)' },
+                                { id: 108, name: 'Cidade das Feras' },
+                                { id: 111, name: 'Palácio dos Dragões' },
+                                { id: 120, name: 'Enseada do Porto' },
+                                { id: 131, name: 'Ilha da Serpente' },
+                                { id: 142, name: 'Arena de Batalha' },
+                                { id: 161, name: 'Vale do Luar' },
+                                { id: 201, name: 'Crepúsculo (1-1)' }
                             ].map((map) => (
-                                <div key={map.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/10 group hover:border-brand-red/30 transition-all">
-                                    <div>
-                                        <p className="text-sm font-bold text-white/80 group-hover:text-white">{map.name}</p>
-                                        <p className="text-[10px] text-white/20 font-mono">ID: {map.id}</p>
+                                <div key={map.id} className="flex items-center justify-between p-5 bg-white/5 rounded-2xl border border-white/5 group hover:bg-white/[0.08] hover:border-brand-red/30 transition-all duration-300">
+                                    <div className="flex items-center space-x-4">
+                                        <div className={`w-2 h-2 rounded-full ${activeMaps.includes(map.id) ? 'bg-emerald-500 shadow-[0_0_10px_#10b981]' : 'bg-white/10'}`}></div>
+                                        <div>
+                                            <p className="text-sm font-black text-white group-hover:text-brand-red transition-colors">{map.name}</p>
+                                            <p className="text-[9px] text-white/30 font-black tracking-widest uppercase">Instância {map.id}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center">
-                                        <div className={`w-2 h-2 rounded-full mr-3 ${activeMaps.includes(map.id) ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-white/10'}`}></div>
-                                        <button className="text-[10px] font-black text-brand-red hover:text-white transition-colors">TOGGLE</button>
-                                    </div>
+                                    <button className="text-[9px] font-black text-white/20 hover:text-brand-red transition-all px-4 py-2 bg-white/5 rounded-xl border border-white/5 uppercase tracking-widest group-hover:border-brand-red/20">
+                                        Ação
+                                    </button>
                                 </div>
                             ))}
                         </div>

@@ -15,7 +15,18 @@ export class ServerService {
      * This logic can be expanded for Linux (ps -ef) or Windows (tasklist).
      */
     static async getStatus(): Promise<ProcessStatus[]> {
-        const processes = ['gauthd', 'gamedbd', 'gdeliveryd', 'glinkd', 'gs']; // Common PW processes
+        const processes = [
+            'gauthd',
+            'gamedbd',
+            'gdeliveryd',
+            'glinkd',
+            'gs',
+            'uniquenamed',
+            'logservice',
+            'logagent',
+            'ispcache',
+            'auction'
+        ];
         const status: ProcessStatus[] = [];
 
         const isWindows = process.platform === 'win32';
@@ -83,7 +94,7 @@ export class ServerService {
      */
     static async getActiveMaps(): Promise<number[]> {
         // Mocking active maps (IDs)
-        return [1, 31, 101, 108]; // Traditional IDs: World, Instance 1, etc.
+        return [1, 31, 101, 102, 108, 111, 120, 131, 142, 161, 201];
     }
 
     static async toggleMap(mapId: number, active: boolean): Promise<boolean> {
