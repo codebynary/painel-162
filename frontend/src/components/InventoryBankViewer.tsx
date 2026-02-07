@@ -9,6 +9,7 @@ interface Item {
     count: number;
     name: string;
     icon?: string;
+    name_color?: string;
 }
 
 interface InventoryBankViewerProps {
@@ -62,11 +63,12 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
                                 src={`/assets/items/${item.item_id}.png`}
                                 alt={item.name}
                                 className="w-8 h-8 md:w-10 md:h-10 relative z-10"
-                                onError={(e) => {
+                                onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                                     // Fallback to external API if local not found
-                                    (e.target as HTMLImageElement).src = `https://api.velorianpw.com/icons/${item.item_id}.png`;
-                                    (e.target as HTMLImageElement).onerror = (err) => {
-                                        (err.target as HTMLImageElement).src = 'https://via.placeholder.com/32?text=?';
+                                    const target = e.currentTarget as HTMLImageElement;
+                                    target.src = `https://api.velorianpw.com/icons/${item.item_id}.png`;
+                                    target.onerror = () => {
+                                        target.src = 'https://via.placeholder.com/32?text=?';
                                     };
                                 }}
                             />
@@ -158,7 +160,12 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
                                         <div className="p-2 bg-brand-red/10 rounded-lg">
                                             <Info className="w-4 h-4 text-brand-red" />
                                         </div>
-                                        <h4 className="font-bold text-white text-sm uppercase leading-tight">{hoveredItem.name}</h4>
+                                        <h4
+                                            className="font-bold text-sm uppercase leading-tight"
+                                            style={{ color: hoveredItem.name_color ? `#${hoveredItem.name_color}` : '#FFFFFF' }}
+                                        >
+                                            {hoveredItem.name}
+                                        </h4>
                                     </div>
                                     <div className="space-y-2">
                                         <p className="text-[9px] font-black text-white/20 uppercase tracking-widest">Quantidade: <span className="text-white/60">{hoveredItem.count}</span></p>

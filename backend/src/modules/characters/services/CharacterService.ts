@@ -1,5 +1,6 @@
 import { CharacterRepository, Character } from '../repositories/CharacterRepository';
 import { GDeliveryClient } from '../../rpc/GDeliveryClient';
+import pool from '../../../config/database';
 
 export class CharacterService {
     /**
@@ -38,27 +39,25 @@ export class CharacterService {
         let inventory = await CharacterRepository.getInventory(roleId);
         let bank = await CharacterRepository.getBank(roleId);
 
-        // Mock Data for Development/Empty DB
+        // Simple mock IDs if empty for demo, but names come from DB now
         if (inventory.length === 0) {
             inventory = [
-                { slot: 0, item_id: 11208, count: 50, name: 'Pedra de Hiper XP' },
-                { slot: 1, item_id: 12979, count: 1, name: 'Montaria: Pantera' },
-                { slot: 2, item_id: 20234, count: 1, name: 'Equipamento Rank 8' },
-                { slot: 3, item_id: 10, count: 500, name: 'Alto-Falante Global' },
-                { slot: 4, item_id: 8, count: 1, name: 'Pergaminho de Treino' }
+                { slot: 0, item_id: 11208, count: 50 },
+                { slot: 1, item_id: 12979, count: 1 },
+                { slot: 2, item_id: 20234, count: 1 },
+                { slot: 3, item_id: 10, count: 500 },
+                { slot: 4, item_id: 8, count: 1 }
             ];
+            // Enrich mocks with names from DB if possible
+            for (let item of inventory) {
+                const [data] = await pool.execute<any[]>('SELECT name, name_color FROM pw_items_data WHERE item_id = ?', [item.item_id]);
+                if (data && data[0]) {
+                    item.name = data[0].name;
+                    item.name_color = data[0].name_color;
+                }
+            }
         }
 
-        if (bank.length === 0) {
-            bank = [
-                { slot: 0, item_id: 4000, count: 10, name: 'Barra de Ouro' },
-                { slot: 1, item_id: 5000, count: 5, name: 'Kit de Refino +10' }
-            ];
-        }
-
-        return {
-            inventory,
-            bank
-        };
+        return { inventory, bank };
     }
 }

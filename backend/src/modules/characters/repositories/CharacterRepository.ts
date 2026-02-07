@@ -64,22 +64,34 @@ export class CharacterRepository {
     }
 
     /**
-     * Fetch character inventory items.
+     * Fetch character inventory items with real names.
      */
     static async getInventory(roleId: number): Promise<any[]> {
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT slot, item_id, count, name, icon FROM pw_users.character_inventory WHERE roleid = ? ORDER BY slot ASC',
+            `SELECT i.slot, i.item_id, i.count, 
+                    COALESCE(d.name, i.name) as name, 
+                    COALESCE(d.name_color, 'FFFFFF') as name_color,
+                    i.icon 
+             FROM pw_users.character_inventory i
+             LEFT JOIN pw_users.pw_items_data d ON i.item_id = d.item_id
+             WHERE i.roleid = ? ORDER BY i.slot ASC`,
             [roleId]
         );
         return rows;
     }
 
     /**
-     * Fetch character bank items.
+     * Fetch character bank items with real names.
      */
     static async getBank(roleId: number): Promise<any[]> {
         const [rows] = await pool.execute<RowDataPacket[]>(
-            'SELECT slot, item_id, count, name, icon FROM pw_users.character_bank WHERE roleid = ? ORDER BY slot ASC',
+            `SELECT b.slot, b.item_id, b.count, 
+                    COALESCE(d.name, b.name) as name, 
+                    COALESCE(d.name_color, 'FFFFFF') as name_color,
+                    b.icon 
+             FROM pw_users.character_bank b
+             LEFT JOIN pw_users.pw_items_data d ON b.item_id = d.item_id
+             WHERE b.roleid = ? ORDER BY b.slot ASC`,
             [roleId]
         );
         return rows;
