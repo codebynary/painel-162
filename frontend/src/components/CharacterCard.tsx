@@ -15,15 +15,15 @@ interface Character {
     roleid: number;
 }
 
-const CLASS_MAP: Record<number, { name: string; icon: React.ReactNode; color: string }> = {
-    0: { name: 'Guerreiro', icon: <Sword className="w-5 h-5" />, color: 'text-red-500' },
-    1: { name: 'Mago', icon: <Zap className="w-5 h-5" />, color: 'text-blue-500' },
-    2: { name: 'Espiritualista', icon: <Zap className="w-5 h-5" />, color: 'text-purple-500' },
-    3: { name: 'Feiticeira', icon: <Skull className="w-5 h-5" />, color: 'text-green-500' },
-    4: { name: 'Bárbaro', icon: <Shield className="w-5 h-5" />, color: 'text-orange-500' },
-    5: { name: 'Mercenário', icon: <Sword className="w-5 h-5" />, color: 'text-red-400' },
-    6: { name: 'Arqueiro', icon: <Crosshair className="w-5 h-5" />, color: 'text-emerald-500' },
-    7: { name: 'Sacerdote', icon: <Heart className="w-5 h-5" />, color: 'text-cyan-500' },
+const CLASS_MAP: Record<number, { name: string; icon: React.ReactNode; color: string; asset?: string }> = {
+    0: { name: 'Guerreiro', icon: <Sword className="w-5 h-5" />, color: 'text-red-500', asset: 'wr.png' },
+    1: { name: 'Mago', icon: <Zap className="w-5 h-5" />, color: 'text-blue-500', asset: 'mg.png' },
+    2: { name: 'Espiritualista', icon: <Zap className="w-5 h-5" />, color: 'text-purple-500', asset: 'esp.png' },
+    3: { name: 'Feiticeira', icon: <Skull className="w-5 h-5" />, color: 'text-green-500', asset: 'wf.png' },
+    4: { name: 'Bárbaro', icon: <Shield className="w-5 h-5" />, color: 'text-orange-500', asset: 'wb.png' },
+    5: { name: 'Mercenário', icon: <Sword className="w-5 h-5" />, color: 'text-red-400', asset: 'mer.png' },
+    6: { name: 'Arqueiro', icon: <Crosshair className="w-5 h-5" />, color: 'text-emerald-500', asset: 'ea.png' },
+    7: { name: 'Sacerdote', icon: <Heart className="w-5 h-5" />, color: 'text-cyan-500', asset: 'ep.png' },
 };
 
 const CharacterCard: React.FC<{ character: Character; index: number; onActionSuccess?: () => void }> = ({ character, index, onActionSuccess }) => {
@@ -83,7 +83,24 @@ const CharacterCard: React.FC<{ character: Character; index: number; onActionSuc
             <div className="flex items-start justify-between relative z-10">
                 <div className="flex items-center space-x-4">
                     <div className={`w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-brand-red/30 transition-colors shadow-inner ${displayClass.color}`}>
-                        {displayClass.icon}
+                        {displayClass.asset ? (
+                            <img
+                                src={`/assets/classes/${displayClass.asset}`}
+                                alt={displayClass.name}
+                                className="w-10 h-10 object-contain"
+                                onError={(e) => {
+                                    // Fallback to lucide icon if image fails
+                                    const target = e.target as HTMLElement;
+                                    target.style.display = 'none';
+                                    const parent = target.parentElement;
+                                    if (parent) {
+                                        // We can't easily inject a React component here via vanilla DOM,
+                                        // so we rely on the parent having the icon rendered as well or 
+                                        // just showing the fallback if the image is hidden.
+                                    }
+                                }}
+                            />
+                        ) : displayClass.icon}
                     </div>
                     <div>
                         <h3 className="font-bold text-white text-xl tracking-tight leading-none mb-1">{character.name}</h3>

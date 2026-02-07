@@ -59,11 +59,15 @@ const InventoryBankViewer: React.FC<InventoryBankViewerProps> = ({ roleId, charN
                         <>
                             <div className="absolute inset-0 bg-brand-red/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <img
-                                src={`https://api.velorianpw.com/icons/${item.item_id}.png`}
+                                src={`/assets/items/${item.item_id}.png`}
                                 alt={item.name}
                                 className="w-8 h-8 md:w-10 md:h-10 relative z-10"
                                 onError={(e) => {
-                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/32?text=?';
+                                    // Fallback to external API if local not found
+                                    (e.target as HTMLImageElement).src = `https://api.velorianpw.com/icons/${item.item_id}.png`;
+                                    (e.target as HTMLImageElement).onerror = (err) => {
+                                        (err.target as HTMLImageElement).src = 'https://via.placeholder.com/32?text=?';
+                                    };
                                 }}
                             />
                             {item.count > 1 && (
